@@ -32,6 +32,10 @@ describe('choisir', () => {
     const r = choisir([rec({ id: 'nuit', type: 'nocturnal flight call' }), rec({ id: 'vol', type: 'flight call' }), rec({ id: 'tic', type: 'call', q: 'B' })]);
     expect(r.map((x) => x.id)).toEqual(['tic', 'vol']);
   });
+  it('met les cris de poussins au nid en dernier', () => {
+    const r = choisir([rec({ id: 'nid', type: 'begging call, call' }), rec({ id: 'adulte', type: 'call', q: 'B' })]);
+    expect(r.map((x) => x.id)).toEqual(['adulte', 'nid']);
+  });
   it('accepte la qualité C seulement s’il n’y a rien de mieux', () => {
     expect(choisir([rec({ id: 'c', q: 'C' })]).map((x) => x.id)).toEqual(['c']);
     expect(choisir([rec({ id: 'c', q: 'C' }), rec({ id: 'a' })]).map((x) => x.id)).toEqual(['a']);

@@ -7,7 +7,8 @@ const estChant = (t) => /\bsong\b/i.test(t);
 const estCri = (t) => /\bcall\b|alarm|flight call/i.test(t);
 
 // Les cris nocturnes de migration et les cris en vol sont moins utiles sur le terrain que le cri habituel.
-const penaliteCri = (t) => (/nocturnal/i.test(t) ? 2 : /flight call/i.test(t) ? 1 : 0);
+// Les cris de poussins au nid (« begging ») passent en dernier.
+const penaliteCri = (t) => (/begging|nestling|hatchling/i.test(t) ? 3 : /nocturnal/i.test(t) ? 2 : /flight call/i.test(t) ? 1 : 0);
 
 export function trier(recs, qualiteMax = 1) {
   const vus = new Set();
