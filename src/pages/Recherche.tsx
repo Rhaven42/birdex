@@ -4,12 +4,19 @@ import { ESPECES } from '../data/species';
 import { zoneById } from '../data/zones';
 import { rechercher } from '../lib/search';
 import { useDecouvertes } from '../lib/hooks';
-import { ABONDANCE, MOIS_LONGS, STATUT } from '../lib/format';
+import { MOIS_LONGS, STATUT } from '../lib/format';
+import type { Presence } from '../data/types';
 import { Silhouette } from '../components/ui';
 
-function periode(m: number[]) {
-  if (m.length === 12) return 'toute l’année';
-  return `de ${MOIS_LONGS[m[0] - 1]} à ${MOIS_LONGS[m[m.length - 1] - 1]}`;
+/** Période la plus fréquente parmi les régions (ex. « printemps–été, d’avril à août »). */
+function resumePeriode(pres: Presence[]) {
+  const compte = new Map<string, number>();
+  for (const p of pres) compte.set(p.statut, (compte.get(p.statut) ?? 0) + 1);
+  const statut = [...compte].sort((a, b) => b[1] - a[1])[0][0] as Presence['statut'];
+  const mois = [...new Set(pres.filter((p) => p.statut === statut).flatMap((p) => p.mois))];
+  if (mois.length >= 12) return 'Toute l’année';
+  const tri = statut === 'hivernant' ? [...mois].sort((a, b) => ((a + 5) % 12) - ((b + 5) % 12)) : [...mois].sort((a, b) => a - b);
+  return `${STATUT[statut]}, de ${MOIS_LONGS[tri[0] - 1]} à ${MOIS_LONGS[tri[tri.length - 1] - 1]}`;
 }
 
 export default function Recherche() {
@@ -35,14 +42,17 @@ export default function Recherche() {
               <div>
                 <strong>{e.nom}</strong> <em>{e.nomScientifique}</em>
                 {dec.has(e.id) && <span className="badge ok">✓ Découverte</span>}
-                <ul className="ou">
-                  {e.presence.map((p) => (
-                    <li key={p.zone}>
-                      📍 <strong>{zoneById(p.zone)?.nom}</strong> : {STATUT[p.statut].toLowerCase()}, {ABONDANCE[p.abondance].toLowerCase()},{' '}
-                      {periode(p.mois)}
-                    </li>
-                  ))}
-                </ul>
+                <p className="ou">
+                  📍 {e.presence.length === 13 ? 'Toutes les régions' : `${e.presence.length} région${e.presence.length > 1 ? 's' : ''}`}
+                  {' · '}
+                  {e.presence
+                    .filter((p) => p.abondance === 'commune')
+                    .map((p) => zoneById(p.zone)?.nom)
+                    .slice(0, 4)
+                    .join(', ') || e.presence.map((p) => zoneById(p.zone)?.nom).slice(0, 4).join(', ')}
+                  {e.presence.length > 4 ? '…' : ''}
+                </p>
+                <p className="ou">🗓️ {resumePeriode(e.presence)}</p>
               </div>
             </Link>
           </li>
@@ -50,7 +60,7 @@ export default function Recherche() {
       </ul>
       {q && resultats.length === 0 && (
         <p className="vide">
-          Aucun oiseau trouvé. Vérifiez l’orthographe ou essayez le nom scientifique. Birdex couvre pour l’instant l’Île-de-France et le Var.
+          Aucun oiseau trouvé. Vérifiez l’orthographe ou essayez le nom scientifique. Birdex référence les espèces observées régulièrement en France métropolitaine.
         </p>
       )}
     </div>

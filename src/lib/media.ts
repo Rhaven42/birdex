@@ -84,6 +84,32 @@ export function photoEspece(titreWiki: string): Promise<Photo | null> {
   return memo.get(titreWiki)!;
 }
 
+export interface Resume {
+  texte: string;
+  url: string;
+}
+const memoResume = new Map<string, Promise<Resume | null>>();
+/** Introduction de l'article Wikipédia (licence CC BY-SA 4.0), chargée dans le navigateur. */
+export function resumeWikipedia(titreWiki: string): Promise<Resume | null> {
+  const titre = titreWiki.replace(/’/g, "'");
+  if (!memoResume.has(titre)) {
+    memoResume.set(
+      titre,
+      api({ action: 'query', prop: 'extracts', exintro: '1', explaintext: '1', exsentences: '6', titles: titre, redirects: '1' })
+        .then((d) => {
+          const page = d?.query?.pages?.[0];
+          if (!page?.extract) return null;
+          return { texte: page.extract.trim(), url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(page.title.replace(/ /g, '_'))}` };
+        })
+        .catch(() => {
+          memoResume.delete(titre);
+          return null;
+        }),
+    );
+  }
+  return memoResume.get(titre)!;
+}
+
 /** Réduit une photo d'observation pour la stocker sur l'appareil. */
 export async function reduireImage(fichier: File, max = 720): Promise<string> {
   const bmp = await createImageBitmap(fichier);

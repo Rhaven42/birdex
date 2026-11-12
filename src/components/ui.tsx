@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Espece } from '../data/types';
-import { DIFFICULTE, LISTE_ROUGE } from '../lib/format';
+import { DIFFICULTE, UICN } from '../lib/format';
 import { usePhoto } from '../lib/hooks';
 
 export function Silhouette({ className = '' }: { className?: string }) {
@@ -36,14 +36,16 @@ export function Badge({ children, className = '' }: { children: ReactNode; class
 }
 
 export function BadgeDifficulte({ e }: { e: Espece }) {
+  if (!e.difficulte) return null;
   return <Badge className={`diff-${e.difficulte}`}>Identification : {DIFFICULTE[e.difficulte]}</Badge>;
 }
 
 export function BadgeConservation({ e }: { e: Espece }) {
-  const lr = LISTE_ROUGE[e.conservation.listeRouge];
+  if (!e.uicn) return null;
+  const c = UICN[e.uicn];
   return (
-    <Badge className={lr.classe}>
-      <abbr title={`Liste rouge France : ${lr.label}`}>{e.conservation.listeRouge}</abbr> · {lr.label}
+    <Badge className={c.classe}>
+      <abbr title={`Liste rouge mondiale de l’UICN : ${c.label}`}>UICN {e.uicn}</abbr> · {c.label}
     </Badge>
   );
 }

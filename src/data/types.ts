@@ -1,9 +1,10 @@
 // Modèle de données (cf. cahier des charges §5.2)
 
-export type ZoneId = 'idf' | 'var';
+/** Identifiant de région (ex. 'idf', 'paca', 'bretagne') */
+export type ZoneId = string;
 
 /** Statut de présence dans une zone donnée */
-export type StatutPresence = 'sedentaire' | 'nicheur' | 'hivernant' | 'passage';
+export type StatutPresence = 'sedentaire' | 'estivant' | 'hivernant' | 'passage';
 export type Abondance = 'commune' | 'peu-commune' | 'rare';
 
 export type Milieu =
@@ -17,7 +18,7 @@ export type Milieu =
   | 'garrigue'
   | 'falaise';
 
-export type CategorieListeRouge = 'LC' | 'NT' | 'VU' | 'EN' | 'CR' | 'NA';
+export type CategorieUICN = 'LC' | 'NT' | 'VU' | 'EN' | 'CR' | 'DD' | 'EX';
 export type Difficulte = 'facile' | 'moyen' | 'difficile';
 
 export interface Presence {
@@ -26,16 +27,20 @@ export interface Presence {
   abondance: Abondance;
   /** Mois de présence (1 = janvier … 12 = décembre) */
   mois: number[];
+  /** Indice de fréquence mensuel 0–100 (100 = mois où l'espèce est la plus notée) */
+  indice: number[];
+  /** Nombre d'observations GBIF dans la région (2015–2025) */
+  observations: number;
+  /** Nombre d'années (sur 11) où l'espèce a été notée dans la région */
+  annees: number;
 }
 
-export interface Espece {
+/** Contenu rédigé à la main (fiches enrichies). */
+export interface Redaction {
   id: string;
   nom: string;
   nomScientifique: string;
-  famille: string;
-  /** Longueur en cm */
   taille: string;
-  /** Envergure en cm */
   envergure: string;
   description: string;
   signes: string[];
@@ -45,30 +50,41 @@ export interface Espece {
   alimentation: string;
   comportement: string;
   reproduction: string;
-  /** Statut général en France : sédentaire, migrateur… */
   statutMigratoire: string;
-  conservation: {
-    /** Liste rouge des oiseaux nicheurs de France métropolitaine (2016) */
-    listeRouge: CategorieListeRouge;
-    protege: boolean;
-  };
+  protege: boolean;
   difficulte: Difficulte;
-  /** Espèce sensible : aucune localisation précise ne doit être affichée */
   sensible?: boolean;
   nocturne?: boolean;
-  /** Titre de l'article Wikipédia (fr) utilisé pour récupérer la photo */
   wiki: string;
+}
+
+export interface Espece extends Partial<Omit<Redaction, 'id' | 'nom' | 'nomScientifique' | 'milieux' | 'signes'>> {
+  id: string;
+  nom: string;
+  nomScientifique: string;
+  /** Famille (nom scientifique, référentiel GBIF) */
+  famille: string;
+  ordre: string;
+  milieux: Milieu[];
+  signes: string[];
+  /** Statut mondial UICN (Wikidata) */
+  uicn?: CategorieUICN;
+  introduite?: boolean;
+  /** Fiche enrichie rédigée à la main */
+  redigee: boolean;
+  /** Clé du taxon dans GBIF (lien vers la carte des observations) */
+  gbif: number;
+  qid?: string;
   presence: Presence[];
 }
 
 export interface Zone {
   id: ZoneId;
   nom: string;
-  type: 'region' | 'departement';
+  /** Code INSEE de la région */
+  code: string;
   /** Codes INSEE des départements couverts */
   departements: string[];
-  /** Région administrative parente (affichage) */
-  region: string;
   description: string;
   sitesConseilles: string[];
 }

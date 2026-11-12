@@ -1,13 +1,13 @@
-import type { Abondance, CategorieListeRouge, Difficulte, Milieu, StatutPresence } from '../data/types';
+import type { Abondance, CategorieUICN, Difficulte, Milieu, StatutPresence } from '../data/types';
 
 export const MOIS_COURTS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 export const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 export const STATUT: Record<StatutPresence, string> = {
   sedentaire: 'Toute l’année',
-  nicheur: 'Nicheur (printemps–été)',
-  hivernant: 'Hivernant',
-  passage: 'De passage',
+  estivant: 'Printemps–été',
+  hivernant: 'Hiver',
+  passage: 'En migration',
 };
 export const ABONDANCE: Record<Abondance, string> = { commune: 'Commune', 'peu-commune': 'Peu commune', rare: 'Rare' };
 export const DIFFICULTE: Record<Difficulte, string> = { facile: 'Facile', moyen: 'Moyen', difficile: 'Difficile' };
@@ -22,13 +22,14 @@ export const MILIEU: Record<Milieu, { label: string; emoji: string }> = {
   garrigue: { label: 'Garrigues', emoji: '🌿' },
   falaise: { label: 'Falaises et rochers', emoji: '⛰️' },
 };
-export const LISTE_ROUGE: Record<CategorieListeRouge, { label: string; classe: string }> = {
+export const UICN: Record<CategorieUICN, { label: string; classe: string }> = {
   LC: { label: 'Préoccupation mineure', classe: 'lr-lc' },
   NT: { label: 'Quasi menacée', classe: 'lr-nt' },
   VU: { label: 'Vulnérable', classe: 'lr-vu' },
   EN: { label: 'En danger', classe: 'lr-en' },
   CR: { label: 'En danger critique', classe: 'lr-cr' },
-  NA: { label: 'Non applicable (espèce introduite)', classe: 'lr-na' },
+  DD: { label: 'Données insuffisantes', classe: 'lr-na' },
+  EX: { label: 'Éteinte', classe: 'lr-cr' },
 };
 
 export const moisCourant = () => new Date().getMonth() + 1;

@@ -28,14 +28,17 @@ export default function Collection() {
         <span>{badges.filter((b) => b.obtenu).length} / {badges.length} ›</span>
       </Link>
       <section className="bloc">
-        <h2>France (zones test)</h2>
+        <h2>France métropolitaine</h2>
         <Progression n={dec.size} total={ESPECES.length} />
-        {ZONES.map((z) => (
-          <div key={z.id} className="sous-progression">
-            <span>{z.nom}</span>
-            <Progression n={prog[z.id].n} total={prog[z.id].total} label={z.nom} />
-          </div>
-        ))}
+        <details>
+          <summary>Détail par région</summary>
+          {ZONES.map((z) => (
+            <div key={z.id} className="sous-progression">
+              <span>{z.nom}</span>
+              <Progression n={prog[z.id].n} total={prog[z.id].total} label={z.nom} />
+            </div>
+          ))}
+        </details>
       </section>
       <div className="grille-especes">
         {trie.map((e) => <CarteEspece key={e.id} e={e} decouverte={dec.has(e.id)} />)}

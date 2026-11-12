@@ -7,6 +7,7 @@ import { zoneById } from '../data/zones';
 import type { Milieu } from '../data/types';
 import { useDecouvertes } from '../lib/hooks';
 import { ABONDANCE, MILIEU, STATUT, moisCourant } from '../lib/format';
+import { normaliser } from '../lib/search';
 
 type Filtre = 'toutes' | 'decouvertes' | 'a-decouvrir';
 
@@ -18,6 +19,7 @@ export default function Zone() {
   const [filtre, setFiltre] = useState<Filtre>('toutes');
   const [milieu, setMilieu] = useState<Milieu | ''>('');
   const [ceMois, setCeMois] = useState(false);
+  const [texte, setTexte] = useState('');
 
   const especes = useMemo(() => (zone ? especesDeZone(zone.id) : []), [zone]);
   if (!zone) return <div className="page"><p>Zone inconnue.</p><Link to="/">Retour à la carte</Link></div>;
@@ -29,6 +31,7 @@ export default function Zone() {
     .filter((e) => (filtre === 'decouvertes' ? dec.has(e.id) : filtre === 'a-decouvrir' ? !dec.has(e.id) : true))
     .filter((e) => !milieu || e.milieux.includes(milieu))
     .filter((e) => !ceMois || e.presence.some((p) => p.zone === zone.id && p.mois.includes(m)))
+    .filter((e) => !texte || normaliser(e.nom).includes(normaliser(texte)) || normaliser(e.nomScientifique).includes(normaliser(texte)))
     .sort((a, b) => Number(dec.has(b.id)) - Number(dec.has(a.id)) || a.nom.localeCompare(b.nom, 'fr'));
   const n = especes.filter((e) => dec.has(e.id)).length;
 
@@ -37,13 +40,14 @@ export default function Zone() {
       <Link to="/" className="retour">‹ Carte</Link>
       <header className="entete-zone">
         <h1>{zone.nom}</h1>
-        {dep && zone.type === 'region' && (
+        {dep && (
           <p className="petit">
-            Vous avez choisi {dep.nom} ({dep.code}) : les données sont pour l’instant établies à l’échelle de la région.
+            Vous avez touché {dep.nom} ({dep.code}) : la liste couvre toute la région.
           </p>
         )}
         <Progression n={n} total={especes.length} />
         <p>{zone.description}</p>
+        <p className="petit">{especes.length} espèces observées régulièrement dans la région (données GBIF 2015–2025).</p>
         <details>
           <summary>Où observer ?</summary>
           <ul>{zone.sitesConseilles.map((s) => <li key={s}>{s}</li>)}</ul>
@@ -51,6 +55,7 @@ export default function Zone() {
       </header>
 
       <div className="filtres">
+        <input className="filtre-texte" type="search" value={texte} onChange={(ev) => setTexte(ev.target.value)} placeholder={`Filtrer les ${especes.length} espèces…`} aria-label="Filtrer par nom" />
         <div className="segment" role="group" aria-label="Filtrer par découverte">
           {(['toutes', 'decouvertes', 'a-decouvrir'] as Filtre[]).map((f) => (
             <button key={f} className={filtre === f ? 'actif' : ''} onClick={() => setFiltre(f)}>

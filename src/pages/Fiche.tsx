@@ -1,16 +1,31 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Calendrier from '../components/Calendrier';
+import CarteRepartition from '../components/CarteRepartition';
 import FormulaireObservation from '../components/FormulaireObservation';
-import FranceMap from '../components/FranceMap';
 import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece, Silhouette } from '../components/ui';
-import { DATE_MAJ, SOURCES, especeById } from '../data/species';
+import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
 import { zoneById } from '../data/zones';
-import { useCarnet } from '../lib/hooks';
+import { useCarnet, useResume } from '../lib/hooks';
 import { MILIEU, dateFr } from '../lib/format';
-import { progressionZones } from '../lib/progression';
 import { nouveauxBadges, type EtatBadge } from '../lib/badges';
 import { chargerCarnet } from '../lib/storage';
+
+function DescriptionWikipedia({ titre }: { titre?: string }) {
+  const { resume, chargement } = useResume(titre);
+  if (!titre) return <p className="petit">Pas encore de description pour cette espèce.</p>;
+  if (chargement) return <p className="petit">Chargement de la description…</p>;
+  if (!resume) return <p className="petit">Description indisponible (hors connexion ?).</p>;
+  return (
+    <>
+      {resume.texte.split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+      <p className="petit">
+        Source : <a href={resume.url} target="_blank" rel="noreferrer">Wikipédia ↗</a>, texte sous licence{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.
+      </p>
+    </>
+  );
+}
 
 export default function Fiche() {
   const { id = '' } = useParams();
@@ -24,7 +39,6 @@ export default function Fiche() {
 
   const mesObs = carnet.filter((o) => o.especeId === e.id);
   const decouverte = mesObs.length > 0;
-  const zones = e.presence.map((p) => p.zone);
   const xenoCanto = `https://xeno-canto.org/explore?query=${encodeURIComponent(e.nomScientifique)}`;
 
   return (
@@ -43,9 +57,7 @@ export default function Fiche() {
             {gagnes.length > 0 && (
               <ul className="bravo-badges">
                 {gagnes.map((b) => (
-                  <li key={b.id}>
-                    {b.emoji} Badge obtenu : <strong>{b.titre}</strong>
-                  </li>
+                  <li key={b.id}>{b.emoji} Badge obtenu : <strong>{b.titre}</strong></li>
                 ))}
               </ul>
             )}
@@ -70,7 +82,8 @@ export default function Fiche() {
           <div className="badges">
             <BadgeDifficulte e={e} />
             {decouverte && <BadgeConservation e={e} />}
-            {decouverte && e.conservation.protege && <Badge className="protege">🛡️ Espèce protégée</Badge>}
+            {decouverte && e.protege && <Badge className="protege">🛡️ Espèce protégée</Badge>}
+            {e.introduite && <Badge className="lr-na">🌍 Espèce introduite</Badge>}
             {e.nocturne && <Badge>🌙 Nocturne</Badge>}
           </div>
         </div>
@@ -80,24 +93,28 @@ export default function Fiche() {
         <section className="bloc verrou">
           <h2>Indices pour la trouver</h2>
           <ul className="indices">
-            <li><strong>Milieux :</strong> {e.milieux.map((m) => `${MILIEU[m].emoji} ${MILIEU[m].label}`).join(', ')}</li>
-            <li><strong>Taille :</strong> {e.taille} cm</li>
+            {e.milieux.length > 0 && (
+              <li><strong>Milieux :</strong> {e.milieux.map((m) => `${MILIEU[m].emoji} ${MILIEU[m].label}`).join(', ')}</li>
+            )}
+            {e.taille && <li><strong>Taille :</strong> {e.taille} cm</li>}
+            <li><strong>Famille :</strong> {e.famille}</li>
             {e.signes.map((s) => <li key={s}>🔎 {s}</li>)}
           </ul>
-          <button className="bouton principal large" onClick={() => setForm(true)}>
-            👀 J’ai observé cet oiseau
-          </button>
-          <p className="petit">La fiche complète (photo, description, mœurs, statut…) se déverrouille quand vous validez une observation.</p>
+          <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
+          <p className="petit">La fiche complète se déverrouille quand vous validez une observation.</p>
         </section>
       )}
 
       <section className="bloc">
-        <h2>Où et quand l’observer</h2>
-        <FranceMap progression={progressionZones(new Set())} surlignage={zones} compacte />
-        <Calendrier e={e} />
+        <h2>Où et quand l’observer en France</h2>
+        <CarteRepartition e={e} />
+        <details className="calendrier-details">
+          <summary>Calendrier de présence par région</summary>
+          <Calendrier e={e} />
+        </details>
         {e.sensible && (
           <p className="alerte">
-            🛡️ Espèce sensible : par mesure de protection, Birdex n’affiche que des zones larges, jamais de site précis.
+            🛡️ Espèce sensible : Birdex n’affiche que des régions entières, jamais de site précis. Ne diffusez pas la localisation de ses nids.
           </p>
         )}
       </section>
@@ -106,35 +123,45 @@ export default function Fiche() {
         <>
           <section className="bloc">
             <h2>Identification</h2>
-            <dl className="mesures">
-              <div><dt>Taille</dt><dd>{e.taille} cm</dd></div>
-              <div><dt>Envergure</dt><dd>{e.envergure} cm</dd></div>
-            </dl>
-            <p>{e.description}</p>
-            <ul className="indices">{e.signes.map((s) => <li key={s}>🔎 {s}</li>)}</ul>
-            <h3>Ne pas confondre</h3>
-            <p>{e.confusions}</p>
+            {(e.taille || e.envergure) && (
+              <dl className="mesures">
+                {e.taille && <div><dt>Taille</dt><dd>{e.taille} cm</dd></div>}
+                {e.envergure && <div><dt>Envergure</dt><dd>{e.envergure} cm</dd></div>}
+              </dl>
+            )}
+            {e.redigee ? (
+              <>
+                <p>{e.description}</p>
+                <ul className="indices">{e.signes.map((s) => <li key={s}>🔎 {s}</li>)}</ul>
+                <h3>Ne pas confondre</h3>
+                <p>{e.confusions}</p>
+              </>
+            ) : (
+              <DescriptionWikipedia titre={e.wiki} />
+            )}
           </section>
 
-          <section className="bloc">
-            <h2>Mode de vie</h2>
-            <h3>Habitat</h3>
-            <p>{e.habitat}</p>
-            <p className="milieux">{e.milieux.map((m) => <Badge key={m}>{MILIEU[m].emoji} {MILIEU[m].label}</Badge>)}</p>
-            <h3>Alimentation</h3>
-            <p>{e.alimentation}</p>
-            <h3>Comportement</h3>
-            <p>{e.comportement}</p>
-            <h3>Reproduction</h3>
-            <p>{e.reproduction}</p>
-            <h3>Statut</h3>
-            <p>{e.statutMigratoire}</p>
-          </section>
+          {e.redigee && (
+            <section className="bloc">
+              <h2>Mode de vie</h2>
+              <h3>Habitat</h3>
+              <p>{e.habitat}</p>
+              <p className="milieux">{e.milieux.map((m) => <Badge key={m}>{MILIEU[m].emoji} {MILIEU[m].label}</Badge>)}</p>
+              <h3>Alimentation</h3>
+              <p>{e.alimentation}</p>
+              <h3>Comportement</h3>
+              <p>{e.comportement}</p>
+              <h3>Reproduction</h3>
+              <p>{e.reproduction}</p>
+              <h3>Statut</h3>
+              <p>{e.statutMigratoire}</p>
+            </section>
+          )}
 
           <section className="bloc">
             <h2>Chant et cris</h2>
             <p>
-              Le lecteur intégré arrive dans la prochaine version. En attendant, écoutez les enregistrements libres de droits sur{' '}
+              Le lecteur intégré arrive bientôt. En attendant, écoutez les enregistrements libres sur{' '}
               <a href={xenoCanto} target="_blank" rel="noreferrer">xeno-canto ↗</a>.
             </p>
             <p className="petit">⚠️ Ne diffusez pas de chants pour attirer les oiseaux, surtout en période de nidification.</p>
@@ -159,11 +186,20 @@ export default function Fiche() {
 
           <section className="bloc sources">
             <h2>Sources</h2>
-            <ul>{SOURCES.map((s) => <li key={s}>{s}</li>)}</ul>
-            <p className="petit">
-              Dernière mise à jour : {dateFr(DATE_MAJ)}. Statut de conservation : Liste rouge des oiseaux nicheurs de France
-              métropolitaine (2016).
-            </p>
+            <ul>
+              <li>
+                Répartition : observations partagées sur <a href={`https://www.gbif.org/species/${e.gbif}`} target="_blank" rel="noreferrer">GBIF</a>{' '}
+                ({SOURCES_DONNEES.periode}), regroupées par région.
+              </li>
+              {e.qid && (
+                <li>
+                  Nom, mensurations, statut UICN : <a href={`https://www.wikidata.org/wiki/${e.qid}`} target="_blank" rel="noreferrer">Wikidata</a>.
+                </li>
+              )}
+              {e.redigee && <li>Textes rédigés à partir de l’INPN (MNHN) et de la LPO.</li>}
+              {!e.redigee && e.wiki && <li>Description : Wikipédia (CC BY-SA 4.0).</li>}
+            </ul>
+            <p className="petit">Données générées le {dateFr(SOURCES_DONNEES.genereLe)} · fiches mises à jour le {dateFr(DATE_MAJ)}.</p>
           </section>
         </>
       )}

@@ -11,21 +11,33 @@ npm test           # tests unitaires (recherche, carnet, cohérence des données
 npm run build      # build de production dans dist/ (hébergeable sur n’importe quel hébergeur statique)
 ```
 
-## MVP (phase 1) – contenu
+## Contenu
 
-- **Carte interactive** des 96 départements (SVG, sans serveur de tuiles) ; zones test colorées selon la progression ; cadrage France / Île-de-France / Var.
-- **52 espèces** : 45 en Île-de-France, 51 dans le Var, avec présence mois par mois, statut (sédentaire, nicheur, hivernant) et abondance.
-- **Fiches verrouillées** (silhouette + indices + où/quand) puis **déverrouillées** après une observation : photo Wikimedia Commons créditée (auteur + licence), description, confusions, habitat, alimentation, comportement, reproduction, Liste rouge, protection, sources et date de mise à jour.
-- **Carnet d’observations** (date, zone, lieu approximatif, note, photo), stocké sur l’appareil ; export JSON et effacement total (RGPD).
-- **Recherche** tolérante aux fautes, par nom commun ou scientifique, avec suggestions et indication des lieux et périodes d’observation.
-- Filtres par milieu, par statut de découverte et pour les espèces présentes ce mois-ci ; suggestions « À chercher ce mois-ci ».
-- **Charte du bon observateur** ; espèces sensibles signalées, sans aucune localisation précise.
+- **355 espèces** observées régulièrement en France métropolitaine, **une seule fiche par espèce**, réparties dans les **13 régions** (96 départements cliquables).
+- **Carte de répartition** sur chaque fiche : régions colorées selon l'abondance, curseur mois par mois, statut par région (toute l'année, printemps–été, hiver, migration).
+- **Fiches** verrouillées puis déverrouillées par une observation. 52 fiches sont entièrement rédigées (description, confusions, mœurs) ; les autres affichent l'introduction Wikipédia (CC BY-SA), chargée dans le navigateur.
+- **Carnet d'observations** local (export JSON, effacement RGPD), **recherche** tolérante aux fautes, **badges et défis** saisonniers, **charte du bon observateur**.
+
+## Données : comment elles sont construites
+
+`npm run birds` (script `scripts/build-birds.mjs`) produit `src/data/gbif.json` à partir de sources vérifiables :
+
+| Donnée | Source |
+| --- | --- |
+| Liste des espèces, régions, mois, abondance | [GBIF](https://www.gbif.org) : observations d'oiseaux en France 2015–2025 (Faune-France, iNaturalist, eBird…), agrégées par région GADM et par mois |
+| Nom français, taille, envergure, statut UICN mondial, article Wikipédia | [Wikidata](https://www.wikidata.org) (identifiant GBIF P846) ; à défaut, noms vernaculaires GBIF |
+| Famille | Référentiel taxonomique GBIF (nom scientifique) |
+
+Critères pour qu'une espèce compte dans une région : ≥ 40 observations, ≥ 0,005 % des observations d'oiseaux de la région, présente au moins 3 mois, et notée au moins 5 années sur 11 (écarte les oiseaux égarés très « twitchés »). Les synonymes taxonomiques sont fusionnés (ex. *Sylvia/Curruca melanocephala*) ; les oiseaux échappés de captivité sont exclus ; les espèces introduites installées sont signalées.
+
+Limites connues : l'abondance reflète la fréquence des signalements (biais d'observation) ; la Liste rouge France et les statuts de protection de l'INPN n'ont pas pu être interrogés automatiquement (protection anti-robots) et ne sont affichés que sur les 52 fiches rédigées.
 
 ## Architecture
 
 ```
-scripts/build-geo.mjs   GeoJSON (france-geojson) → tracés SVG compacts (src/data/geo.json)
-src/data/               types.ts (modèle), species.ts (fiches), zones.ts
+scripts/build-geo.mjs   GeoJSON (france-geojson) → tracés SVG + rattachement département → région
+scripts/build-birds.mjs GBIF + Wikidata → src/data/gbif.json (espèces, présence par région et par mois)
+src/data/               types.ts, gbif.json, redactions.ts (52 fiches rédigées), species.ts (fusion), zones.ts
 src/lib/                search.ts, storage.ts (localStorage), media.ts (API Wikipédia/Commons), hooks.ts
 src/components/         FranceMap, Calendrier, FormulaireObservation, BarreRecherche, ui
 src/pages/              Accueil, Zone, Fiche, Recherche, Collection, Carnet, Charte
@@ -33,11 +45,14 @@ src/pages/              Accueil, Zone, Fiche, Recherche, Collection, Carnet, Cha
 
 Stack : React 19, TypeScript, Vite, React Router (HashRouter), vite-plugin-pwa (cache hors ligne), Vitest.
 
-## Ajouter une espèce ou une zone
+## Mettre à jour les données
 
-1. `src/data/zones.ts` : ajouter la zone (id, codes INSEE des départements).
-2. `src/data/species.ts` : ajouter l’espèce ou une entrée `presence` pour la nouvelle zone.
-3. `npm test` vérifie la cohérence (identifiants uniques, mois valides, zones existantes).
+```bash
+NODE_USE_ENV_PROXY=1 npm run birds   # interroge GBIF et Wikidata (réponses mises en cache dans data-src/cache)
+npm test                             # vérifie : une fiche par espèce, 13 régions, présences cohérentes…
+```
+
+Pour enrichir une fiche, ajoutez son texte dans `src/data/redactions.ts` (clé : nom scientifique).
 
 ## À faire valider
 
@@ -45,5 +60,6 @@ Les textes des fiches ont été rédigés à partir de sources naturalistes reco
 
 ## Feuille de route
 
-- Phase 2 : lecteur audio intégré (xeno-canto, avec licences), extension à toute la métropole, badges et défis, « Autour de moi ».
+- Fait : extension aux 13 régions, cartes de répartition, badges et défis.
+- À venir : lecteur audio intégré (xeno-canto, avec licences), « Autour de moi », rédaction de nouvelles fiches.
 - Phase 3 : identification par photo (IA, présentée comme une suggestion), téléchargement hors ligne par région, mode enfant.

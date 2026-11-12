@@ -16,7 +16,9 @@ export function chargerCarnet(): Observation[] {
   try {
     const brut = localStorage.getItem(CLE);
     const data = brut ? JSON.parse(brut) : [];
-    return Array.isArray(data) ? data : [];
+    if (!Array.isArray(data)) return [];
+    // Migration : la zone test « Var » fait désormais partie de la région Provence-Alpes-Côte d'Azur
+    return data.map((o: Observation) => ((o.zone as string) === 'var' ? { ...o, zone: 'paca' } : o));
   } catch {
     return [];
   }

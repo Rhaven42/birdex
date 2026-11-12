@@ -238,3 +238,31 @@ main { max-width: 960px; margin: 0 auto; }
 .lien-badges span:nth-child(2) { flex: 1; }
 .bravo-badges { margin: 0.3rem 0 0; padding: 0; list-style: none; font-size: 0.9rem; }
 .bravo > div { flex: 1; }
+
+/* Liste des régions (accueil) */
+.progression-nationale { margin: 0.8rem 0 0.4rem; }
+.liste-regions { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 0.35rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.liste-regions a { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.6rem; padding: 0.55rem 0.8rem; border-radius: 12px; background: var(--fond); text-decoration: none; color: var(--navy); }
+.liste-regions a:hover { background: var(--teal-clair); }
+.lr-nom { font-weight: 800; }
+.lr-compte { font-size: 0.85rem; color: var(--doux); font-weight: 700; }
+.liste-regions .progression-barre { grid-column: 1 / -1; height: 6px; margin: 0; }
+.liste-regions .progression-barre span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--orange)); }
+.carte-zoom select { border: 2px solid var(--bord); border-radius: 999px; padding: 0.45rem 0.9rem; font-weight: 700; color: var(--navy); background: #fff; min-height: 44px; max-width: 100%; }
+.sous-progression { grid-template-columns: minmax(120px, 34%) 1fr; }
+details > summary { font-weight: 800; color: var(--blue); cursor: pointer; padding: 0.3rem 0; }
+
+/* Carte de répartition (fiche espèce) */
+.repartition svg { width: 100%; height: auto; max-height: 420px; display: block; }
+.rep-regions path { fill: #e6edf4; stroke: #fff; stroke-width: 2.5; stroke-linejoin: round; cursor: pointer; transition: fill 0.25s; }
+.rep-regions path.choisie { stroke: var(--navy); stroke-width: 4; }
+.rep-regions path:focus { outline: none; stroke: var(--navy); stroke-width: 4; }
+.repartition-resume { margin: 0 0 0.4rem; }
+.curseur-mois { display: grid; grid-template-columns: 7.5rem 1fr auto; align-items: center; gap: 0.6rem; margin: 0.6rem 0; font-weight: 800; color: var(--navy); }
+.curseur-mois input { width: 100%; accent-color: var(--orange); min-height: 32px; }
+.lien { background: none; border: 0; color: var(--blue); font-weight: 800; cursor: pointer; padding: 0.3rem; }
+.legende { display: flex; flex-wrap: wrap; gap: 0.8rem; font-size: 0.8rem; color: var(--doux); }
+.legende i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 1px solid var(--bord); }
+.repartition-detail { margin-top: 0.6rem; padding: 0.6rem 0.8rem; background: var(--fond); border-radius: 10px; font-size: 0.9rem; }
+.calendrier-details { margin-top: 0.8rem; }
+.filtre-texte { flex: 1 1 200px; border: 2px solid var(--bord); border-radius: 999px; padding: 0.45rem 0.9rem; min-height: 40px; }

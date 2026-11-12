@@ -45,11 +45,38 @@ function bbox(g) {
   return [Math.round(a), Math.round(b), Math.round(c - a), Math.round(d - b)];
 }
 
+// Rattache chaque département à sa région : point intérieur du département testé dans les polygones régionaux.
+function dansAnneau(pt, r) {
+  let c = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi, yi] = r[i], [xj, yj] = r[j];
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+const dansGeom = (pt, g) => (g.type === 'Polygon' ? [g.coordinates] : g.coordinates).some((poly) => dansAnneau(pt, poly[0]) && !poly.slice(1).some((h) => dansAnneau(pt, h)));
+function regionDe(f) {
+  // On teste plusieurs sommets du contour : la région majoritaire l'emporte (frontières simplifiées).
+  const votes = {};
+  const r0 = rings(f.geometry)[0];
+  const pas = Math.max(1, Math.floor(r0.length / 40));
+  for (let i = 0; i < r0.length; i += pas) {
+    const [x, y] = r0[i];
+    const [cx, cy] = r0.reduce(([a, b], [p, q]) => [a + p / r0.length, b + q / r0.length], [0, 0]);
+    const pt = [x + (cx - x) * 0.15, y + (cy - y) * 0.15]; // légèrement vers l'intérieur
+    const reg = regs.features.find((g) => dansGeom(pt, g.geometry));
+    if (reg) votes[reg.properties.code] = (votes[reg.properties.code] ?? 0) + 1;
+  }
+  const best = Object.entries(votes).sort((a, b) => b[1] - a[1])[0];
+  if (!best) throw new Error(`Région introuvable pour ${f.properties.nom}`);
+  return best[0];
+}
+
 const out = {
   width: W,
   height: H,
   departements: deps.features
-    .map((f) => ({ code: f.properties.code, nom: f.properties.nom, d: toPath(f.geometry), bbox: bbox(f.geometry) }))
+    .map((f) => ({ code: f.properties.code, nom: f.properties.nom, region: regionDe(f), d: toPath(f.geometry), bbox: bbox(f.geometry) }))
     .sort((a, b) => a.code.localeCompare(b.code)),
   regions: regs.features.map((f) => ({ code: f.properties.code, nom: f.properties.nom, d: toPath(f.geometry), bbox: bbox(f.geometry) })),
 };
