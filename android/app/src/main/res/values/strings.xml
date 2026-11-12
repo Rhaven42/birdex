@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Birdex</string>
+    <string name="title_activity_main">Birdex</string>
+    <string name="package_name">io.github.rhaven42.birdex</string>
+    <string name="custom_url_scheme">io.github.rhaven42.birdex</string>
+</resources>

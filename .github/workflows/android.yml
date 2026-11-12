@@ -1,0 +1,68 @@
+name: Application Android
+
+# Compile l'APK Android et le publie dans les « Releases » du dépôt,
+# à chaque modification de main, après une mise à jour des sons, ou à la demande.
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ['Sons xeno-canto']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - run: npm ci
+      - name: Tests
+        run: npm test
+      - name: Construction du site
+        run: npm run build
+      - name: Copie dans le projet Android
+        run: npx cap sync android
+      - name: Compilation de l'APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+      - name: Renommer l'APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk Birdex-1.0.${{ github.run_number }}.apk
+      - uses: actions/upload-artifact@v5
+        with:
+          name: Birdex-apk
+          path: Birdex-*.apk
+      - name: Publier la version
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v${{ github.run_number }}
+          name: Birdex Android 1.0.${{ github.run_number }}
+          body: |
+            Application Android Birdex, version 1.0.${{ github.run_number }}.
+
+            **Installation** : téléchargez `Birdex-1.0.${{ github.run_number }}.apk` depuis votre téléphone Android, ouvrez-le, puis autorisez l'installation depuis cette source si Android le demande. Les nouvelles versions s'installent par-dessus l'ancienne, sans perdre votre carnet.
+          files: Birdex-*.apk
+          make_latest: true

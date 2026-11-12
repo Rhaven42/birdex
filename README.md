@@ -18,6 +18,14 @@ npm run build      # build de production dans dist/ (hébergeable sur n’import
 - **Fiches** verrouillées puis déverrouillées par une observation. 52 fiches sont entièrement rédigées (description, confusions, mœurs) ; les autres affichent l'introduction Wikipédia (CC BY-SA), chargée dans le navigateur.
 - **Carnet d'observations** local (export JSON, effacement RGPD), **recherche** tolérante aux fautes, **badges et défis** saisonniers, **charte du bon observateur**.
 
+## Application Android
+
+Le dossier `android/` est un projet [Capacitor](https://capacitorjs.com) qui embarque le site dans une vraie application Android.
+
+- **Télécharger l'APK** : page [Releases](https://github.com/Rhaven42/birdex/releases) du dépôt (compilé automatiquement par le workflow « Application Android » à chaque modification).
+- **Compiler soi-même** : `npm run build && npx cap sync android`, puis ouvrir `android/` dans Android Studio.
+- Les APK sont signés avec une **clé de test** versionnée (`android/app/birdex-test.keystore`), pour que chaque version s'installe par-dessus la précédente. Pour publier sur le Play Store, créez une clé d'importation privée (jamais versionnée).
+
 ## Données : comment elles sont construites
 
 `npm run birds` (script `scripts/build-birds.mjs`) produit `src/data/gbif.json` à partir de sources vérifiables :

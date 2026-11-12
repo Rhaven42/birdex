@@ -9,6 +9,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Enregistrement manuel (src/main.tsx) : pas de service worker dans l'application Android
+      injectRegister: false,
       includeAssets: ['favicon.png', 'apple-touch-icon.png', 'logo-birdex.webp', 'emblem.webp'],
       manifest: {
         name: 'Birdex – L’encyclopédie des oiseaux',
