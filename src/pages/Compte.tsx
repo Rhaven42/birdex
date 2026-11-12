@@ -6,6 +6,55 @@ import { supprimerCompte, synchroniser, useEtatSynchro, useSession } from '../li
 import { useCarnet } from '../lib/hooks';
 import { oublierToutLocal } from '../lib/storage';
 import MotDePasseOublie from '../components/MotDePasseOublie';
+import { Capacitor } from '@capacitor/core';
+import { PAGE_APK, installerMaintenant, verifierMiseAJour } from '../lib/natif';
+import { useEtatMaj } from '../lib/useEtatMaj';
+
+const TEXTE_MAJ = {
+  inconnu: '',
+  recherche: 'Recherche d’une mise à jour…',
+  telechargement: 'Téléchargement de la nouvelle version…',
+  prete: 'Une nouvelle version est prête.',
+  'a-jour': '✓ Birdex est à jour.',
+  'nouvel-apk': 'Une nouvelle version de l’application doit être installée.',
+  erreur: 'La mise à jour n’a pas pu être vérifiée',
+} as const;
+
+function Version() {
+  const maj = useEtatMaj();
+  const natif = Capacitor.isNativePlatform();
+  return (
+    <section className="bloc">
+      <h2>Version de l’application</h2>
+      <p className="petit">Version {__VERSION_WEB__}{natif ? ' · application Android' : ' · site web'}</p>
+      {natif && (
+        <>
+          {maj.statut !== 'inconnu' && (
+            <p role="status">
+              {TEXTE_MAJ[maj.statut]}
+              {maj.statut === 'erreur' && maj.message ? ` : ${maj.message}` : ''}
+            </p>
+          )}
+          <div className="actions">
+            {maj.statut === 'prete' ? (
+              <button className="bouton principal" onClick={() => void installerMaintenant()}>Mettre à jour maintenant</button>
+            ) : maj.statut === 'nouvel-apk' ? (
+              <a className="bouton principal" href={PAGE_APK} target="_blank" rel="noreferrer">Télécharger la nouvelle version</a>
+            ) : (
+              <button
+                className="bouton secondaire"
+                disabled={maj.statut === 'recherche' || maj.statut === 'telechargement'}
+                onClick={() => void verifierMiseAJour()}
+              >
+                Vérifier les mises à jour
+              </button>
+            )}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
 
 // Interrupteur : activé une fois l'envoi d'e-mails (Brevo) branché dans Supabase et testé
 const RECUPERATION_MDP = false;
@@ -133,6 +182,7 @@ export default function Compte() {
       <div className="page">
         <h1 className="titre-section">Réglages</h1>
         <ReglageTexte />
+        <Version />
       </div>
     );
   }
@@ -213,6 +263,8 @@ export default function Compte() {
           </section>
         </>
       )}
+
+      <Version />
 
       <Link to="/aide" className="bouton secondaire large aide-compte">Comment ça marche ?</Link>
     </div>

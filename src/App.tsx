@@ -14,7 +14,8 @@ import Aide from './pages/Aide';
 import Bienvenue, { bienvenueVue } from './components/Bienvenue';
 import { comptesActifs } from './lib/supabase';
 import { useSession, useEtatSynchro } from './lib/sync';
-import { nouvelApk, PAGE_APK } from './lib/natif';
+import { installerMaintenant, nouvelApk, PAGE_APK } from './lib/natif';
+import { useEtatMaj } from './lib/useEtatMaj';
 
 function BandeauNouvelApk() {
   const [visible, setVisible] = useState(nouvelApk.disponible);
@@ -23,6 +24,16 @@ function BandeauNouvelApk() {
     nouvelApk.abonnes.add(f);
     return () => void nouvelApk.abonnes.delete(f);
   }, []);
+  const maj = useEtatMaj();
+  if (maj.statut === 'telechargement')
+    return <div className="bandeau-maj" role="status"><span>⏳ Téléchargement d’une nouvelle version de Birdex…</span></div>;
+  if (maj.statut === 'prete')
+    return (
+      <div className="bandeau-maj" role="status">
+        <span>✨ Une nouvelle version de Birdex est prête.</span>
+        <button className="bouton principal" onClick={() => void installerMaintenant()}>Mettre à jour</button>
+      </div>
+    );
   if (!visible) return null;
   return (
     <div className="bandeau-maj" role="status">
