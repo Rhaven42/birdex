@@ -5,6 +5,10 @@ import { comptesActifs, supabase } from '../lib/supabase';
 import { supprimerCompte, synchroniser, useEtatSynchro, useSession } from '../lib/sync';
 import { useCarnet } from '../lib/hooks';
 import { oublierToutLocal } from '../lib/storage';
+import MotDePasseOublie from '../components/MotDePasseOublie';
+
+// Interrupteur : activé une fois l'envoi d'e-mails (Brevo) branché dans Supabase et testé
+const RECUPERATION_MDP = false;
 import { useTailleTexte, type TailleTexte } from '../lib/texte';
 
 function ReglageTexte() {
@@ -39,6 +43,7 @@ function Formulaire() {
   const [mode, setMode] = useState<'connexion' | 'inscription'>('inscription');
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
+  const [voir, setVoir] = useState(false);
   const [attente, setAttente] = useState(false);
   const [erreur, setErreur] = useState<string>();
   const [info, setInfo] = useState<string>();
@@ -59,6 +64,7 @@ function Formulaire() {
   }
 
   return (
+    <>
     <form className="bloc formulaire-compte" onSubmit={valider}>
       <div className="segment" role="group" aria-label="Choix">
         <button type="button" className={mode === 'inscription' ? 'actif' : ''} onClick={() => setMode('inscription')}>Créer un compte</button>
@@ -71,7 +77,7 @@ function Formulaire() {
       <label>
         Mot de passe
         <input
-          type="password"
+          type={voir ? 'text' : 'password'}
           autoComplete={mode === 'inscription' ? 'new-password' : 'current-password'}
           minLength={8}
           value={mdp}
@@ -80,6 +86,22 @@ function Formulaire() {
         />
         {mode === 'inscription' && <span className="petit">8 caractères minimum.</span>}
       </label>
+      <label className="case">
+        <input type="checkbox" checked={voir} onChange={(e) => setVoir(e.target.checked)} /> Afficher le mot de passe
+      </label>
+      {mode === 'inscription' && (
+        <p className="alerte">✍️ Notez bien votre e-mail et votre mot de passe sur un papier : ils ne pourront pas être récupérés en cas d’oubli.</p>
+      )}
+      {mode === 'connexion' && !RECUPERATION_MDP && (
+        <details className="facultatif">
+          <summary>Mot de passe oublié ?</summary>
+          <p>
+            Il ne peut malheureusement pas être récupéré. Essayez les mots de passe que vous utilisez d’habitude, en touchant
+            « Afficher le mot de passe » pour vérifier ce que vous tapez. Sinon, vous pouvez créer un nouveau compte avec une
+            autre adresse e-mail, mais la collection de l’ancien compte ne pourra pas être retrouvée.
+          </p>
+        </details>
+      )}
       {erreur && <p className="erreur" role="alert">{erreur}</p>}
       {info && <p className="alerte" role="status">{info}</p>}
       <button className="bouton principal large" disabled={attente}>
@@ -89,6 +111,13 @@ function Formulaire() {
         Votre carnet actuel est conservé et envoyé dans votre compte. Données hébergées par Supabase ; vous pouvez supprimer votre compte à tout moment.
       </p>
     </form>
+    {mode === 'connexion' && RECUPERATION_MDP && (
+      <details className="bloc facultatif">
+        <summary>Mot de passe oublié ?</summary>
+        <MotDePasseOublie emailInitial={email} />
+      </details>
+    )}
+    </>
   );
 }
 
@@ -145,6 +174,7 @@ export default function Compte() {
               <button
                 className="bouton secondaire"
                 onClick={async () => {
+                  if (!confirm('Se déconnecter ? Votre collection quittera ce téléphone. Pour la retrouver, il faudra votre e-mail et votre mot de passe : les avez-vous bien notés ?')) return;
                   await synchroniser(); // envoie les dernières observations avant de partir
                   await supabase!.auth.signOut({ scope: 'local' });
                   oublierToutLocal();

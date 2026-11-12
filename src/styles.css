@@ -612,3 +612,7 @@ html.texte-tres-grand { font-size: 125%; }
 .aide-compte { display: block; text-align: center; margin-top: 1rem; }
 .segment.portee { display: grid; grid-template-columns: 1fr 1fr; margin: 1rem 0 0.6rem; }
 .segment.portee button { border-radius: 16px; }
+.mdp-oublie { display: grid; gap: 0.8rem; margin-top: 0.6rem; }
+.mdp-oublie label:not(.case) { display: grid; gap: 0.25rem; font-weight: 800; color: var(--navy); }
+.mdp-oublie input:not([type='checkbox']) { border: 2px solid var(--bord); border-radius: 12px; padding: 0.7rem 0.9rem; min-height: 52px; font-weight: 400; }
+.champ-code { font-size: 1.6rem !important; letter-spacing: 0.4em; text-align: center; font-weight: 800 !important; }
