@@ -460,3 +460,20 @@ body { background: radial-gradient(1200px 600px at 100% -10%, #e3f6f5 0%, transp
 .entete-zone .hero { margin-top: 0.4rem; }
 .entete-zone .hero h1 { font-size: 1.6rem; }
 .ou svg { color: var(--teal); vertical-align: -2px; }
+
+/* Compte */
+.entete .logo { margin: 0; }
+.entete { display: flex; align-items: center; justify-content: space-between; max-width: none; }
+.entete > .logo { flex: 1; max-width: 960px; }
+.bouton-compte { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--teal-clair); color: var(--navy); flex-shrink: 0; }
+.bouton-compte.connecte { background: var(--orange-clair); color: var(--orange); }
+.point-synchro { position: absolute; right: 2px; bottom: 2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; background: var(--ab-commune); }
+.point-synchro.en-cours { background: var(--ab-peu); }
+.point-synchro.erreur { background: var(--ab-rare); }
+.hero-icone { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; background: rgba(255, 255, 255, 0.16); flex-shrink: 0; position: relative; z-index: 1; }
+.formulaire-compte { display: grid; gap: 0.8rem; }
+.formulaire-compte label { display: grid; gap: 0.25rem; font-weight: 800; font-size: 0.9rem; color: var(--navy); }
+.formulaire-compte input { border: 2px solid var(--bord); border-radius: 12px; padding: 0.7rem 0.9rem; font-weight: 400; min-height: 48px; }
+.formulaire-compte input:focus { border-color: var(--teal); outline: none; }
+.bandeau-maj { display: flex; align-items: center; gap: 0.8rem; justify-content: space-between; margin: 0.6rem 1rem 0; padding: 0.7rem 0.9rem; border-radius: 16px; background: var(--orange-clair); color: var(--navy); font-weight: 700; font-size: 0.9rem; }
+.bandeau-maj .bouton { min-height: 40px; padding: 0.4rem 1rem; flex-shrink: 0; }

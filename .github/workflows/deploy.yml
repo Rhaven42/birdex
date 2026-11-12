@@ -36,6 +36,15 @@ jobs:
         run: npm test
       - name: Construction
         run: npm run build
+      - name: Paquet de mise à jour pour l'application Android
+        run: |
+          VERSION=$(git rev-parse --short=10 HEAD)
+          (cd dist && zip -qr "../birdex-web-$VERSION.zip" . -x '.*')
+          mv "birdex-web-$VERSION.zip" dist/
+          cat > dist/mise-a-jour.json <<JSON
+          {"version": "$VERSION", "url": "https://rhaven42.github.io/birdex/birdex-web-$VERSION.zip", "apkMin": $(cat android/apk-min.txt)}
+          JSON
+          cat dist/mise-a-jour.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

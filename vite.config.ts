@@ -1,10 +1,22 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { execSync } from 'node:child_process';
+
+// Version du contenu web : identifiant du commit (même valeur pour le site, l'APK et les mises à jour)
+function versionWeb(): string {
+  if (process.env.BIRDEX_VERSION) return process.env.BIRDEX_VERSION;
+  try {
+    return execSync('git rev-parse --short=10 HEAD').toString().trim();
+  } catch {
+    return 'dev';
+  }
+}
 
 export default defineConfig({
   base: './',
   build: { chunkSizeWarningLimit: 800 },
+  define: { __VERSION_WEB__: JSON.stringify(versionWeb()) },
   plugins: [
     react(),
     VitePWA({

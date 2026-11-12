@@ -6,6 +6,9 @@ import './styles.css';
 import App from './App';
 import { Capacitor } from '@capacitor/core';
 import { initialiserAndroid } from './lib/natif';
+import { demarrerSynchroAuto } from './lib/sync';
+
+demarrerSynchroAuto();
 
 if (Capacitor.isNativePlatform()) {
   initialiserAndroid();

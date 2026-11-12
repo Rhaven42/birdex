@@ -97,6 +97,8 @@ export interface Observation {
   lieu: string; // commune ou lieu-dit, volontairement approximatif
   note: string;
   photo?: string; // data URL réduite
+  /** Chemin de la photo dans le compte en ligne (Supabase Storage), une fois envoyée */
+  photoChemin?: string;
   validation: 'manuelle' | 'ia';
   creeLe: string;
 }

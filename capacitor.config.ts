@@ -10,6 +10,13 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https',
   },
+  plugins: {
+    // Mises à jour automatiques du contenu de l'application, publiées sur GitHub Pages (voir src/lib/natif.ts)
+    CapacitorUpdater: {
+      autoUpdate: false, // gestion manuelle, sans le service en ligne de Capgo
+      statsUrl: '', // aucune statistique envoyée à Capgo
+    },
+  },
 };
 
 export default config;

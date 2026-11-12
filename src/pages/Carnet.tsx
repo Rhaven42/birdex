@@ -56,8 +56,8 @@ export default function Carnet() {
       <section className="bloc donnees">
         <h2>Mes données</h2>
         <p className="petit">
-          Birdex ne crée pas de compte : votre carnet est enregistré uniquement sur cet appareil. Aucune donnée n’est envoyée à un serveur.
-          Seules les photos des fiches sont chargées depuis Wikimedia Commons.
+          Sans compte, votre carnet est enregistré uniquement sur cet appareil. Avec un <Link to="/compte">compte Birdex</Link>, il est aussi
+          sauvegardé en ligne et vous le retrouvez sur tous vos téléphones.
         </p>
         <div className="actions">
           <button className="bouton secondaire" onClick={exporter} disabled={!carnet.length}>Exporter (JSON)</button>
