@@ -8,7 +8,7 @@ import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece } from '../compo
 import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
 import { zoneById } from '../data/zones';
 import { useCarnet, useResume } from '../lib/hooks';
-import { MILIEU, dateFr } from '../lib/format';
+import { DIFFICULTE, MILIEU, dateFr } from '../lib/format';
 import { nouveauxBadges, type EtatBadge } from '../lib/badges';
 import { chargerCarnet } from '../lib/storage';
 
@@ -28,6 +28,8 @@ function DescriptionWikipedia({ titre }: { titre?: string }) {
   );
 }
 
+type Onglet = 'indices' | 'histoire' | 'caracteristiques' | 'vie' | 'carte' | 'sons' | 'observations' | 'sources';
+
 export default function Fiche() {
   const { id = '' } = useParams();
   const e = especeById(id);
@@ -36,10 +38,151 @@ export default function Fiche() {
   const [form, setForm] = useState(false);
   const [bravo, setBravo] = useState(false);
   const [gagnes, setGagnes] = useState<EtatBadge[]>([]);
+  const [choix, setChoix] = useState<Onglet | null>(null);
   if (!e) return <div className="page"><p>Espèce introuvable.</p><Link to="/">Retour</Link></div>;
 
   const mesObs = carnet.filter((o) => o.especeId === e.id);
   const decouverte = mesObs.length > 0;
+
+  const cases: { id: Onglet; label: string; emoji: string; verrou?: boolean }[] = [
+    ...(!decouverte ? [{ id: 'indices' as const, label: 'Indices', emoji: '🔎' }] : []),
+    { id: 'histoire', label: 'Histoire', emoji: '📖', verrou: !decouverte },
+    { id: 'caracteristiques', label: 'Caractéristiques', emoji: '📏', verrou: !decouverte },
+    ...(e.redigee ? [{ id: 'vie' as const, label: 'Mode de vie', emoji: '🌿', verrou: !decouverte }] : []),
+    { id: 'carte', label: 'Où l’observer', emoji: '🗺️' },
+    { id: 'sons', label: 'Sons', emoji: '🎵' },
+    { id: 'observations', label: `Observations${mesObs.length ? ` (${mesObs.length})` : ''}`, emoji: '📓', verrou: !decouverte },
+    { id: 'sources', label: 'Sources', emoji: '📚' },
+  ];
+  const onglet = cases.some((c) => c.id === choix) ? choix : decouverte ? 'histoire' : 'indices';
+  const setOnglet = (o: Onglet) => setChoix(o);
+  const caseActive = cases.find((c) => c.id === onglet)!;
+
+  const contenu = (o: Onglet) => {
+    switch (o) {
+      case 'indices':
+        return (
+          <>
+            <ul className="indices">
+              {e.milieux.length > 0 && (
+                <li><strong>Milieux :</strong> {e.milieux.map((m) => `${MILIEU[m].emoji} ${MILIEU[m].label}`).join(', ')}</li>
+              )}
+              {e.taille && <li><strong>Taille :</strong> {e.taille} cm</li>}
+              <li><strong>Famille :</strong> {e.famille}</li>
+              {e.signes.map((x) => <li key={x}>🔎 {x}</li>)}
+            </ul>
+            <p className="petit">Astuce : écoutez ses sons et regardez où et quand l’observer avant de partir.</p>
+            <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
+          </>
+        );
+      case 'histoire':
+        return <DescriptionWikipedia titre={e.wiki ?? e.nomScientifique} />;
+      case 'caracteristiques':
+        return (
+          <>
+            <dl className="fiche-chiffres">
+              {e.taille && <div><dt>Taille</dt><dd>{e.taille} cm</dd></div>}
+              {e.envergure && <div><dt>Envergure</dt><dd>{e.envergure} cm</dd></div>}
+              <div><dt>Famille</dt><dd>{e.famille}</dd></div>
+              <div><dt>Ordre</dt><dd>{e.ordre}</dd></div>
+              <div><dt>Régions</dt><dd>{e.presence.length} / 13</dd></div>
+              {e.difficulte && <div><dt>Identification</dt><dd>{DIFFICULTE[e.difficulte]}</dd></div>}
+            </dl>
+            {e.redigee && (
+              <>
+                <p>{e.description}</p>
+                <ul className="indices">{e.signes.map((x) => <li key={x}>🔎 {x}</li>)}</ul>
+                <h3>Ne pas confondre</h3>
+                <p>{e.confusions}</p>
+              </>
+            )}
+            <div className="badges">
+              <BadgeConservation e={e} />
+              {e.protege && <Badge className="protege">🛡️ Espèce protégée</Badge>}
+              {e.introduite && <Badge className="lr-na">🌍 Espèce introduite</Badge>}
+            </div>
+          </>
+        );
+      case 'vie':
+        return (
+          <>
+            <h3>Habitat</h3>
+            <p>{e.habitat}</p>
+            <p className="milieux">{e.milieux.map((m) => <Badge key={m}>{MILIEU[m].emoji} {MILIEU[m].label}</Badge>)}</p>
+            <h3>Alimentation</h3>
+            <p>{e.alimentation}</p>
+            <h3>Comportement</h3>
+            <p>{e.comportement}</p>
+            <h3>Reproduction</h3>
+            <p>{e.reproduction}</p>
+            <h3>Statut</h3>
+            <p>{e.statutMigratoire}</p>
+          </>
+        );
+      case 'carte':
+        return (
+          <>
+            <CarteRepartition e={e} />
+            <details className="calendrier-details">
+              <summary>Calendrier de présence par région</summary>
+              <Calendrier e={e} />
+            </details>
+            {e.sensible && (
+              <p className="alerte">
+                🛡️ Espèce sensible : Birdex n’affiche que des régions entières, jamais de site précis. Ne diffusez pas la localisation de ses nids.
+              </p>
+            )}
+          </>
+        );
+      case 'sons':
+        return (
+          <>
+            {!decouverte && <p className="petit">On entend souvent un oiseau bien avant de le voir : écoutez-le avant de partir.</p>}
+            <LecteurSons e={e} />
+            <p className="petit">⚠️ Ne diffusez pas ces sons dans la nature pour attirer les oiseaux, surtout en période de nidification.</p>
+          </>
+        );
+      case 'observations':
+        return (
+          <>
+            <ul className="liste-obs">
+              {mesObs.map((x) => (
+                <li key={x.id}>
+                  {x.photo && <img src={x.photo} alt="" />}
+                  <div>
+                    <strong>{dateFr(x.date)}</strong> · {x.zone === 'autre' ? 'Ailleurs' : zoneById(x.zone)?.nom}
+                    {x.lieu && ` · ${x.lieu}`}
+                    {x.note && <p>{x.note}</p>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <button className="bouton secondaire" onClick={() => setForm(true)}>+ Ajouter une observation</button>
+          </>
+        );
+      case 'sources':
+        return (
+          <div className="sources">
+            <ul>
+              <li>
+                Répartition : observations partagées sur <a href={`https://www.gbif.org/species/${e.gbif}`} target="_blank" rel="noreferrer">GBIF</a>{' '}
+                ({SOURCES_DONNEES.periode}), regroupées par région.
+              </li>
+              {e.qid && (
+                <li>
+                  Nom, mensurations, statut UICN : <a href={`https://www.wikidata.org/wiki/${e.qid}`} target="_blank" rel="noreferrer">Wikidata</a>.
+                </li>
+              )}
+              <li>Photo : Wikimedia Commons (auteur et licence sous la photo).</li>
+              <li>Histoire : Wikipédia (CC BY-SA 4.0).</li>
+              {e.redigee && <li>Caractéristiques et mode de vie rédigés à partir de l’INPN (MNHN) et de la LPO.</li>}
+              <li>Sons : <a href="https://xeno-canto.org" target="_blank" rel="noreferrer">xeno-canto</a> (auteur et licence sous chaque enregistrement).</li>
+            </ul>
+            <p className="petit">Données générées le {dateFr(SOURCES_DONNEES.genereLe)} · fiches mises à jour le {dateFr(DATE_MAJ)}.</p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="page fiche">
@@ -74,127 +217,39 @@ export default function Fiche() {
           <p className="sci">{e.nomScientifique}</p>
           <div className="badges">
             <BadgeDifficulte e={e} />
-            {decouverte && <BadgeConservation e={e} />}
-            {decouverte && e.protege && <Badge className="protege">🛡️ Espèce protégée</Badge>}
             {e.introduite && <Badge className="lr-na">🌍 Espèce introduite</Badge>}
             {e.nocturne && <Badge>🌙 Nocturne</Badge>}
           </div>
         </div>
       </header>
 
-      {!decouverte && (
-        <section className="bloc verrou">
-          <h2>Indices pour la trouver</h2>
-          <ul className="indices">
-            {e.milieux.length > 0 && (
-              <li><strong>Milieux :</strong> {e.milieux.map((m) => `${MILIEU[m].emoji} ${MILIEU[m].label}`).join(', ')}</li>
-            )}
-            {e.taille && <li><strong>Taille :</strong> {e.taille} cm</li>}
-            <li><strong>Famille :</strong> {e.famille}</li>
-            {e.signes.map((s) => <li key={s}>🔎 {s}</li>)}
-          </ul>
-          <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
-          <p className="petit">La fiche complète se déverrouille quand vous validez une observation.</p>
-        </section>
-      )}
+      <nav className="cases" role="tablist" aria-label="Rubriques de la fiche">
+        {cases.map((c) => (
+          <button
+            key={c.id}
+            role="tab"
+            aria-selected={onglet === c.id}
+            aria-controls="panneau-fiche"
+            className={`case-fiche ${onglet === c.id ? 'active' : ''} ${c.verrou ? 'fermee' : ''}`}
+            onClick={() => setOnglet(c.id)}
+          >
+            <span className="case-emoji" aria-hidden="true">{c.verrou ? '🔒' : c.emoji}</span>
+            <span>{c.label}</span>
+          </button>
+        ))}
+      </nav>
 
-      <section className="bloc">
-        <h2>Où et quand l’observer en France</h2>
-        <CarteRepartition e={e} />
-        <details className="calendrier-details">
-          <summary>Calendrier de présence par région</summary>
-          <Calendrier e={e} />
-        </details>
-        {e.sensible && (
-          <p className="alerte">
-            🛡️ Espèce sensible : Birdex n’affiche que des régions entières, jamais de site précis. Ne diffusez pas la localisation de ses nids.
-          </p>
+      <section className="bloc panneau" id="panneau-fiche" role="tabpanel" aria-label={caseActive.label}>
+        <h2>{caseActive.emoji} {caseActive.label}</h2>
+        {caseActive.verrou ? (
+          <div className="verrou-panneau">
+            <p>🔒 Cette rubrique se débloque quand vous avez observé l’oiseau.</p>
+            <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
+          </div>
+        ) : (
+          contenu(caseActive.id)
         )}
       </section>
-
-      <section className="bloc">
-        <h2>Chant et cris</h2>
-        {!decouverte && <p className="petit">Écoutez-le avant de partir : on entend souvent un oiseau bien avant de le voir.</p>}
-        <LecteurSons e={e} />
-        <p className="petit">⚠️ Ne diffusez pas ces sons dans la nature pour attirer les oiseaux, surtout en période de nidification.</p>
-      </section>
-
-      {decouverte && (
-        <>
-          <section className="bloc">
-            <h2>Identification</h2>
-            {(e.taille || e.envergure) && (
-              <dl className="mesures">
-                {e.taille && <div><dt>Taille</dt><dd>{e.taille} cm</dd></div>}
-                {e.envergure && <div><dt>Envergure</dt><dd>{e.envergure} cm</dd></div>}
-              </dl>
-            )}
-            {e.redigee ? (
-              <>
-                <p>{e.description}</p>
-                <ul className="indices">{e.signes.map((s) => <li key={s}>🔎 {s}</li>)}</ul>
-                <h3>Ne pas confondre</h3>
-                <p>{e.confusions}</p>
-              </>
-            ) : (
-              <DescriptionWikipedia titre={e.wiki} />
-            )}
-          </section>
-
-          {e.redigee && (
-            <section className="bloc">
-              <h2>Mode de vie</h2>
-              <h3>Habitat</h3>
-              <p>{e.habitat}</p>
-              <p className="milieux">{e.milieux.map((m) => <Badge key={m}>{MILIEU[m].emoji} {MILIEU[m].label}</Badge>)}</p>
-              <h3>Alimentation</h3>
-              <p>{e.alimentation}</p>
-              <h3>Comportement</h3>
-              <p>{e.comportement}</p>
-              <h3>Reproduction</h3>
-              <p>{e.reproduction}</p>
-              <h3>Statut</h3>
-              <p>{e.statutMigratoire}</p>
-            </section>
-          )}
-
-          <section className="bloc">
-            <h2>Mes observations ({mesObs.length})</h2>
-            <ul className="liste-obs">
-              {mesObs.map((o) => (
-                <li key={o.id}>
-                  {o.photo && <img src={o.photo} alt="" />}
-                  <div>
-                    <strong>{dateFr(o.date)}</strong> · {o.zone === 'autre' ? 'Ailleurs' : zoneById(o.zone)?.nom}
-                    {o.lieu && ` · ${o.lieu}`}
-                    {o.note && <p>{o.note}</p>}
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <button className="bouton secondaire" onClick={() => setForm(true)}>+ Ajouter une observation</button>
-          </section>
-
-          <section className="bloc sources">
-            <h2>Sources</h2>
-            <ul>
-              <li>
-                Répartition : observations partagées sur <a href={`https://www.gbif.org/species/${e.gbif}`} target="_blank" rel="noreferrer">GBIF</a>{' '}
-                ({SOURCES_DONNEES.periode}), regroupées par région.
-              </li>
-              {e.qid && (
-                <li>
-                  Nom, mensurations, statut UICN : <a href={`https://www.wikidata.org/wiki/${e.qid}`} target="_blank" rel="noreferrer">Wikidata</a>.
-                </li>
-              )}
-              {e.redigee && <li>Textes rédigés à partir de l’INPN (MNHN) et de la LPO.</li>}
-              {!e.redigee && e.wiki && <li>Description : Wikipédia (CC BY-SA 4.0).</li>}
-              <li>Sons : <a href="https://xeno-canto.org" target="_blank" rel="noreferrer">xeno-canto</a> (auteurs et licences indiqués sous chaque enregistrement).</li>
-            </ul>
-            <p className="petit">Données générées le {dateFr(SOURCES_DONNEES.genereLe)} · fiches mises à jour le {dateFr(DATE_MAJ)}.</p>
-          </section>
-        </>
-      )}
 
       {form && (
         <FormulaireObservation
@@ -203,6 +258,7 @@ export default function Fiche() {
           onValide={() => {
             setForm(false);
             setBravo(!decouverte);
+            setChoix('histoire');
             setGagnes(nouveauxBadges(carnet, chargerCarnet()));
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}

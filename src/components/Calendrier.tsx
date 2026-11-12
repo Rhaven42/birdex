@@ -12,7 +12,7 @@ export default function Calendrier({ e }: { e: Espece }) {
           <div className="calendrier-titre">
             <strong>{zoneById(p.zone)?.nom}</strong>
             <span>
-              {STATUT[p.statut]} · {ABONDANCE[p.abondance]}
+              {STATUT[p.statut]} · <span className={`pastille ab-${p.abondance}`}>{ABONDANCE[p.abondance]}</span>
             </span>
           </div>
           <ol className="calendrier-mois">

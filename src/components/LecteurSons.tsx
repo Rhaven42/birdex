@@ -18,7 +18,15 @@ export interface Enregistrement {
 }
 
 const SONS = (sonsData as { sons: Record<string, Enregistrement[]> }).sons;
-export const sonsDe = (e: Espece): Enregistrement[] => SONS[e.nomScientifique] ?? [];
+/** 2 sons au maximum : le meilleur chant et le meilleur cri (la sélection est déjà triée par qualité). */
+export function sonsDe(e: Espece): Enregistrement[] {
+  const tous = SONS[e.nomScientifique] ?? [];
+  const chant = tous.find((r) => /\bsong\b/i.test(r.type));
+  const cri = tous.find((r) => r !== chant && !/\bsong\b/i.test(r.type));
+  const choix = [chant, cri].filter((r): r is Enregistrement => !!r);
+  for (const r of tous) if (choix.length < 2 && !choix.includes(r)) choix.push(r);
+  return choix;
+}
 
 const TYPES: [RegExp, string][] = [
   [/alarm/i, 'Cri d’alarme'],

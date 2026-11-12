@@ -9,12 +9,15 @@ const rec = (o) => ({
 });
 
 describe('choisir', () => {
-  it('garde au plus 2 chants et 2 cris', () => {
+  it('garde 2 sons au maximum : le meilleur chant et le meilleur cri', () => {
     const r = choisir([
       rec({ id: '1' }), rec({ id: '2' }), rec({ id: '3' }),
       rec({ id: '4', type: 'call' }), rec({ id: '5', type: 'alarm call' }), rec({ id: '6', type: 'call' }),
     ]);
-    expect(r.map((x) => x.id)).toEqual(['1', '2', '4', '5']);
+    expect(r.map((x) => x.id)).toEqual(['1', '4']);
+  });
+  it('complète avec un 2e enregistrement si l’espèce n’a pas de cri', () => {
+    expect(choisir([rec({ id: '1' }), rec({ id: '2' })]).map((x) => x.id)).toEqual(['1', '2']);
   });
   it('écarte les fichiers indisponibles, la mauvaise qualité et les durées extrêmes', () => {
     const r = choisir([rec({ id: 'a', file: '' }), rec({ id: 'b', q: 'C' }), rec({ id: 'c', length: '0:02' }), rec({ id: 'd', length: '5:00' }), rec({ id: 'ok' })]);
@@ -22,19 +25,19 @@ describe('choisir', () => {
   });
   it('préfère la qualité A puis les enregistrements sans autre espèce', () => {
     const r = choisir([rec({ id: 'b', q: 'B' }), rec({ id: 'bruit', also: ['Parus major'] }), rec({ id: 'propre' })]);
-    expect(r.map((x) => x.id)).toEqual(['propre', 'bruit']);
+    expect(r[0].id).toBe('propre');
   });
   it('rend les liens absolus et garde auteur et licence', () => {
     const [x] = choisir([rec({})]);
     expect(x).toMatchObject({ auteur: 'Auteur', licence: 'https://creativecommons.org/licenses/by-nc-sa/4.0/', page: 'https://xeno-canto.org/1', sono: 'https://xeno-canto.org/sounds/1/med.png' });
   });
   it('préfère le cri habituel aux cris nocturnes de migration', () => {
-    const r = choisir([rec({ id: 'nuit', type: 'nocturnal flight call' }), rec({ id: 'vol', type: 'flight call' }), rec({ id: 'tic', type: 'call', q: 'B' })]);
-    expect(r.map((x) => x.id)).toEqual(['tic', 'vol']);
+    const r = choisir([rec({ id: 'chant' }), rec({ id: 'nuit', type: 'nocturnal flight call' }), rec({ id: 'vol', type: 'flight call' }), rec({ id: 'tic', type: 'call', q: 'B' })]);
+    expect(r.map((x) => x.id)).toEqual(['chant', 'tic']);
   });
   it('met les cris de poussins au nid en dernier', () => {
-    const r = choisir([rec({ id: 'nid', type: 'begging call, call' }), rec({ id: 'adulte', type: 'call', q: 'B' })]);
-    expect(r.map((x) => x.id)).toEqual(['adulte', 'nid']);
+    const r = choisir([rec({ id: 'chant' }), rec({ id: 'nid', type: 'begging call, call' }), rec({ id: 'adulte', type: 'call', q: 'B' })]);
+    expect(r.map((x) => x.id)).toEqual(['chant', 'adulte']);
   });
   it('accepte la qualité C seulement s’il n’y a rien de mieux', () => {
     expect(choisir([rec({ id: 'c', q: 'C' })]).map((x) => x.id)).toEqual(['c']);

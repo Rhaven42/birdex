@@ -6,7 +6,8 @@ import { zoneById, zoneOfRegionCode } from '../data/zones';
 import { ABONDANCE, MOIS_LONGS, STATUT, moisCourant } from '../lib/format';
 import { FRANCE } from './FranceMap';
 
-const NIVEAU = { commune: 1, 'peu-commune': 0.6, rare: 0.3 } as const;
+/** Couleurs d'abondance : vert = commune, orange = peu commune, rouge = rare. */
+export const COULEUR_ABONDANCE = { commune: 'var(--ab-commune)', 'peu-commune': 'var(--ab-peu)', rare: 'var(--ab-rare)' } as const;
 
 /**
  * Carte de répartition d'une espèce en France, région par région.
@@ -18,12 +19,12 @@ export default function CarteRepartition({ e }: { e: Espece }) {
   const [choix, setChoix] = useState<string | null>(null);
   const parZone = new Map(e.presence.map((p) => [p.zone, p]));
 
-  const intensite = (codeRegion: string) => {
+  /** Couleur de la région : abondance si l'espèce y est présente (ce mois-ci, si un mois est choisi). */
+  const couleur = (codeRegion: string) => {
     const p = parZone.get(zoneOfRegionCode(codeRegion) ?? '');
-    if (!p) return 0;
-    if (!mois) return NIVEAU[p.abondance];
-    if (!p.mois.includes(mois)) return 0;
-    return Math.max(0.15, (p.indice[mois - 1] / 100) * NIVEAU[p.abondance]);
+    if (!p) return undefined;
+    if (mois && !p.mois.includes(mois)) return undefined;
+    return COULEUR_ABONDANCE[p.abondance];
   };
 
   const pChoisie = choix ? parZone.get(choix) : undefined;
@@ -38,13 +39,13 @@ export default function CarteRepartition({ e }: { e: Espece }) {
       <svg viewBox={FRANCE.join(' ')} role="img" aria-label={`Carte de répartition : ${e.nom}`}>
         <g className="rep-regions">
           {geo.regions.map((r) => {
-            const k = intensite(r.code);
+            const k = couleur(r.code);
             const z = zoneOfRegionCode(r.code);
             return (
               <path
                 key={r.code}
                 d={r.d}
-                style={{ fill: k ? `color-mix(in srgb, var(--orange) ${Math.round(k * 100)}%, #fff3e6)` : undefined }}
+                style={{ fill: k }}
                 className={`${k ? 'present' : ''} ${choix === z ? 'choisie' : ''}`}
                 onClick={() => setChoix(z ?? null)}
                 tabIndex={0}
@@ -76,10 +77,10 @@ export default function CarteRepartition({ e }: { e: Espece }) {
       </label>
 
       <div className="legende" aria-hidden="true">
-        <span><i style={{ background: 'var(--orange)' }} /> Commune</span>
-        <span><i style={{ background: 'color-mix(in srgb, var(--orange) 60%, #fff3e6)' }} /> Peu commune</span>
-        <span><i style={{ background: 'color-mix(in srgb, var(--orange) 30%, #fff3e6)' }} /> Rare</span>
-        <span><i style={{ background: '#e6edf4' }} /> Absente</span>
+        <span><i style={{ background: 'var(--ab-commune)' }} /> Commune</span>
+        <span><i style={{ background: 'var(--ab-peu)' }} /> Peu commune</span>
+        <span><i style={{ background: 'var(--ab-rare)' }} /> Rare</span>
+        <span><i style={{ background: '#e6edf4' }} /> Absente{mois ? ' ce mois-ci' : ''}</span>
       </div>
 
       {choix && (

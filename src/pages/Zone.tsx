@@ -77,7 +77,7 @@ export default function Zone() {
       <div className="grille-especes">
         {liste.map((e) => {
           const p = e.presence.find((x) => x.zone === zone.id)!;
-          return <CarteEspece key={e.id} e={e} decouverte={dec.has(e.id)} sousTitre={`${STATUT[p.statut]} · ${ABONDANCE[p.abondance]}`} />;
+          return <CarteEspece key={e.id} e={e} decouverte={dec.has(e.id)} sousTitre={<><span className={`pastille ab-${p.abondance}`}>{ABONDANCE[p.abondance]}</span> {STATUT[p.statut]}</>} />;
         })}
       </div>
       {liste.length === 0 && <p className="vide">Aucune espèce ne correspond à ces filtres.</p>}

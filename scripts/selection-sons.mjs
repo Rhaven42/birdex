@@ -23,13 +23,14 @@ export function trier(recs, qualiteMax = 1) {
 export function choisir(recs) {
   let t = trier(recs);
   if (!t.length) t = trier(recs, 2);
-  const chants = t.filter((x) => estChant(x.type)).slice(0, 2);
+  // 2 sons au maximum : le meilleur chant et le meilleur cri
+  const chants = t.filter((x) => estChant(x.type)).slice(0, 1);
   const cris = t
     .filter((x) => estCri(x.type) && !estChant(x.type))
     .sort((a, b) => penaliteCri(a.type) - penaliteCri(b.type)) // tri stable : garde l'ordre qualité/durée à pénalité égale
-    .slice(0, 2);
+    .slice(0, 1);
   const sel = [...chants, ...cris];
-  if (!sel.length) sel.push(...t.slice(0, 2)); // espèces sans chant typique (rapaces, oiseaux d'eau…)
+  for (const x of t) if (sel.length < 2 && !sel.includes(x)) sel.push(x); // compléter (espèces sans chant ou sans cri typique)
   return sel.map((x) => ({
     id: x.id,
     type: x.type,
