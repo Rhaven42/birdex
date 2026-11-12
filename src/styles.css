@@ -548,3 +548,42 @@ html.texte-tres-grand { font-size: 125%; }
 .photo-voile .famille { display: none; }
 .reglage-texte .segment { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
 .reglage-texte .segment button { border-radius: 14px; padding: 0.4rem; line-height: 1.2; }
+
+/* Choix de la région : carte des 13 régions et gros boutons */
+.carte-regions { width: 100%; height: auto; max-height: 70vh; display: block; }
+.carte-regions path { fill: var(--teal-clair); stroke: #fff; stroke-width: 4; stroke-linejoin: round; cursor: pointer; transition: fill 0.15s; }
+.carte-regions path:hover, .carte-regions path:focus { fill: #bfe9e7; outline: none; }
+.carte-regions path:focus-visible { stroke: var(--navy); stroke-width: 6; }
+.carte-regions path.choisie { stroke: var(--navy); stroke-width: 6; }
+.noms-regions text { fill: var(--navy); font-weight: 900; font-family: inherit; paint-order: stroke; stroke: #fff; stroke-width: 6px; stroke-linejoin: round; pointer-events: none; }
+.consigne { font-size: 1.05rem; color: var(--navy); margin: 0 0 0.6rem; }
+.gros-choix { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.6rem; }
+.gros-choix button { width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 0.8rem; min-height: 68px; padding: 0.8rem 1rem; border: 2px solid var(--bord); border-radius: 18px; background: #fff; color: var(--navy); font: inherit; text-align: left; cursor: pointer; box-shadow: var(--ombre); }
+.gros-choix button:hover, .gros-choix button:focus-visible { border-color: var(--teal); }
+.gros-choix button.ma-region { border-color: var(--orange-fonce); background: var(--orange-clair); }
+.gc-nom { font-size: 1.15rem; font-weight: 900; flex: 1 1 auto; }
+.gc-compte { font-size: 0.95rem; color: var(--doux); order: 3; width: 100%; }
+.gros-choix button > svg { margin-left: auto; color: var(--doux); flex-shrink: 0; }
+.ma-region-carte { display: grid; gap: 0.7rem; }
+.mr-etiquette { display: flex; align-items: center; gap: 0.4rem; margin: 0; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.95rem; }
+.mr-lien { display: grid; gap: 0.5rem; text-decoration: none; color: var(--navy); }
+.mr-nom { font-size: 1.7rem; font-weight: 900; line-height: 1.15; }
+.mr-compte { font-size: 1rem; color: var(--doux); }
+.mr-lien .progression-barre { height: 12px; }
+.mr-lien .progression-barre span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--orange)); }
+.mr-lien .bouton { text-align: center; margin-top: 0.3rem; }
+.mr-autres { display: grid; gap: 0.4rem; }
+.mr-autres .bouton { text-align: center; }
+.lien-discret { text-align: center; color: var(--blue); font-weight: 800; padding: 0.7rem; min-height: 48px; }
+.ma-region-carte .bouton.large { text-align: center; margin: 0.2rem 0; }
+.noms-regions text { stroke-width: 9px; }
+
+/* Le mâle et la femelle, côte à côte */
+.male-femelle h2 { margin-bottom: 0.7rem; }
+.mf-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.mf-photo { margin: 0; border-radius: 16px; overflow: hidden; background: var(--fond); display: flex; flex-direction: column; }
+.mf-photo img, .mf-absente { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+.mf-absente { display: grid; place-items: center; color: var(--doux); font-size: 0.95rem; }
+.mf-photo figcaption { padding: 0.5rem 0.6rem; display: grid; gap: 0.2rem; }
+.mf-photo figcaption strong { font-size: 1.1rem; color: var(--navy); }
+.mf-credit { font-size: 0.85rem; color: var(--doux); text-decoration: none; overflow-wrap: anywhere; }

@@ -9,6 +9,7 @@ import Carnet from './pages/Carnet';
 import Charte from './pages/Charte';
 import Badges from './pages/Badges';
 import Compte from './pages/Compte';
+import Regions from './pages/Regions';
 import { comptesActifs } from './lib/supabase';
 import { useSession, useEtatSynchro } from './lib/sync';
 import { nouvelApk, PAGE_APK } from './lib/natif';
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="/charte" element={<Charte />} />
           <Route path="/badges" element={<Badges />} />
           <Route path="/compte" element={<Compte />} />
+          <Route path="/regions" element={<Regions />} />
           <Route path="*" element={<div className="page"><p>Page introuvable.</p><Link to="/">Accueil</Link></div>} />
         </Routes>
         </div>

@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import FranceMap from '../components/FranceMap';
 import BarreRecherche from '../components/BarreRecherche';
 import { Anneau, Icone } from '../components/Icones';
 import { CarteEspece } from '../components/ui';
 import { ESPECES } from '../data/species';
-import { ZONES } from '../data/zones';
+import { zoneById } from '../data/zones';
+import { useMaRegion } from '../lib/maRegion';
 import { useCarnet, useDecouvertes } from '../lib/hooks';
 import { MOIS_LONGS, moisCourant } from '../lib/format';
 import { photoDe } from '../lib/media';
@@ -24,6 +24,7 @@ function oiseauDuJour() {
 
 export default function Accueil() {
   const dec = useDecouvertes();
+  const maRegion = useMaRegion();
   const carnet = useCarnet();
   const prog = progressionZones(dec);
   const m = moisCourant();
@@ -55,6 +56,29 @@ export default function Accueil() {
         </Anneau>
       </section>
 
+      {maRegion ? (
+        <section className="bloc ma-region-carte">
+          <p className="mr-etiquette"><Icone nom="lieu" taille={20} /> Ma région</p>
+          <Link to={`/zone/${maRegion}`} className="mr-lien">
+            <span className="mr-nom">{zoneById(maRegion)?.nom}</span>
+            <span className="mr-compte">{prog[maRegion].n} / {prog[maRegion].total} oiseaux découverts</span>
+            <span className="progression-barre"><span style={{ width: `${(prog[maRegion].n / prog[maRegion].total) * 100}%` }} /></span>
+            <span className="bouton principal">Voir les oiseaux de ma région</span>
+          </Link>
+          <div className="mr-autres">
+            <Link to="/regions" className="bouton secondaire">Explorer une autre région</Link>
+            <Link to="/regions?choix=1" className="lien-discret">Changer ma région</Link>
+          </div>
+        </section>
+      ) : (
+        <section className="bloc ma-region-carte">
+          <h2 className="titre-section"><Icone nom="lieu" /> Où habitez-vous ?</h2>
+          <p>Choisissez votre région une fois : Birdex vous montrera ses oiseaux en premier.</p>
+          <Link to="/regions?choix=1" className="bouton principal large">Choisir ma région</Link>
+          <Link to="/regions" className="bouton secondaire large">Voir toutes les régions</Link>
+        </section>
+      )}
+
       <BarreRecherche />
 
       {jour && photoJour && (
@@ -68,25 +92,6 @@ export default function Accueil() {
           <span className="odj-fleche"><Icone nom="suivant" /></span>
         </Link>
       )}
-
-      <section className="bloc">
-        <h2 className="titre-section"><Icone nom="carte" /> Explorez la France</h2>
-        <FranceMap progression={prog} />
-        <ul className="liste-regions">
-          {ZONES.map((z) => {
-            const p = prog[z.id];
-            return (
-              <li key={z.id}>
-                <Link to={`/zone/${z.id}`}>
-                  <span className="lr-nom">{z.nom}</span>
-                  <span className="lr-compte">{p.n} / {p.total}</span>
-                  <span className="progression-barre"><span style={{ width: `${(p.n / p.total) * 100}%` }} /></span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
 
       {duMois.length > 0 && (
         <section className="bloc">

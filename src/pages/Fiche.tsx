@@ -4,6 +4,7 @@ import Calendrier from '../components/Calendrier';
 import CarteRepartition from '../components/CarteRepartition';
 import FormulaireObservation from '../components/FormulaireObservation';
 import LecteurSons from '../components/LecteurSons';
+import MaleFemelle from '../components/MaleFemelle';
 import { Icone, type NomIcone } from '../components/Icones';
 import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece } from '../components/ui';
 import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
@@ -224,6 +225,8 @@ export default function Fiche() {
           {e.nocturne && <Badge>Nocturne</Badge>}
         </div>
       </header>
+
+      <MaleFemelle e={e} />
 
       <nav className="cases" role="tablist" aria-label="Rubriques de la fiche">
         {cases.map((c) => (

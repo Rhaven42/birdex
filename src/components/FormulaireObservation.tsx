@@ -3,6 +3,7 @@ import type { Espece, ZoneId } from '../data/types';
 import { ZONES } from '../data/zones';
 import { ajouterObservation } from '../lib/storage';
 import { reduireImage } from '../lib/media';
+import { lireMaRegion } from '../lib/maRegion';
 
 interface Props {
   e: Espece;
@@ -13,7 +14,7 @@ interface Props {
 export default function FormulaireObservation({ e, onFermer, onValide }: Props) {
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(aujourdhui);
-  const [zone, setZone] = useState<ZoneId | 'autre'>(e.presence[0]?.zone ?? 'autre');
+  const [zone, setZone] = useState<ZoneId | 'autre'>(lireMaRegion() ?? e.presence[0]?.zone ?? 'autre');
   const [lieu, setLieu] = useState('');
   const [note, setNote] = useState('');
   const [photo, setPhoto] = useState<string>();
