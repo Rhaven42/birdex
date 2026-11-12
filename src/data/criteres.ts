@@ -149,6 +149,11 @@ const C: Record<string, string> = {
   // Grives, merles
   'Turdus viscivorus': 'm FCJ', 'Turdus pilaris': 'm CF', 'Turdus iliacus': 'm CFJ', 'Turdus philomelos': 'm JF',
   'Turdus torquatus': 'm R', 'Turdus merula': 'm JFC',
+  // Espèces rares mais régulières (ajout de la vérification avec la liste officielle)
+  'Anser fabalis': 'g CE', 'Zapornia parva': 'p E', 'Zapornia pusilla': 'p E', 'Stercorarius longicaudus': 'm M',
+  'Phylloscopus ibericus': 'p F', 'Acrocephalus paludicola': 'p E', 'Larus hyperboreus': 'g M', 'Alle alle': 'p M',
+  'Buteo lagopus': 'g C', 'Chlidonias leucopterus': 'm E', 'Carpodacus erythrinus': 'p CJ', 'Emberiza melanocephala': 'p C',
+  'Passer hispaniolensis': 'p CJ', 'Anthus cervinus': 'p CEM', 'Microcarbo pygmaeus': 'mg E',
 };
 
 export interface Critere {

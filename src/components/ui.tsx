@@ -76,13 +76,28 @@ function ImageFiable({ src, onEchec, ...rest }: ImgHTMLAttributes<HTMLImageEleme
   );
 }
 
+/**
+ * Fond flou tiré de la même photo : la photo elle-même est affichée en entier (tête, corps et queue,
+ * jamais recadrée), et ce fond comble les bords au lieu de bandes vides.
+ */
+export function FondFlou({ src }: { src: string }) {
+  return <span className="fond-flou" aria-hidden="true" style={{ backgroundImage: `url("${src}")` }} />;
+}
+
 export function CarteEspece({ e, decouverte, sousTitre, enCouleur = false }: { e: Espece; decouverte: boolean; sousTitre?: ReactNode; enCouleur?: boolean }) {
   const photo = photoDe(e);
   const [ko, setKo] = useState(false);
   return (
     <Link to={`/espece/${e.id}`} className={`carte-espece ${decouverte ? 'decouverte' : 'verrouillee'} ${enCouleur ? 'en-couleur' : ''}`}>
       <div className="carte-espece-visuel">
-        {photo && !ko ? <ImageFiable src={photo.miniature} alt="" loading="lazy" decoding="async" onEchec={() => setKo(true)} /> : <Silhouette />}
+        {photo && !ko ? (
+          <>
+            <FondFlou src={photo.miniature} />
+            <ImageFiable src={photo.miniature} alt="" loading="lazy" decoding="async" onEchec={() => setKo(true)} />
+          </>
+        ) : (
+          <Silhouette />
+        )}
         {!decouverte && <span className="cadenas" aria-label="À découvrir">🔒</span>}
       </div>
       <div className="carte-espece-texte">
@@ -109,6 +124,7 @@ export function PhotoEspece({ e, verrouillee = false, children }: { e: Espece; v
   return (
     <figure className={`photo-fiche ${verrouillee ? 'a-decouvrir' : ''}`}>
       <div className="photo-cadre">
+        <FondFlou src={photo.miniature} />
         <ImageFiable src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} onEchec={() => setKo(true)} />
         {verrouillee && <span className="bandeau-decouvrir">🔒 À découvrir</span>}
         {children && <div className="photo-voile">{children}</div>}

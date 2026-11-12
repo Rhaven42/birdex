@@ -6,10 +6,10 @@ import FormulaireObservation from '../components/FormulaireObservation';
 import LecteurSons from '../components/LecteurSons';
 import MaleFemelle from '../components/MaleFemelle';
 import { Icone, type NomIcone } from '../components/Icones';
-import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece } from '../components/ui';
-import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
+import { Badge, BadgeConservation, BadgeDifficulte, CarteEspece, PhotoEspece } from '../components/ui';
+import { DATE_MAJ, SOURCES_DONNEES, especeById, especesProches } from '../data/species';
 import { zoneById } from '../data/zones';
-import { useCarnet, useResume } from '../lib/hooks';
+import { useCarnet, useDecouvertes, useResume } from '../lib/hooks';
 import { DIFFICULTE, MILIEU, dateFr } from '../lib/format';
 import { nouveauxBadges, type EtatBadge } from '../lib/badges';
 import { chargerCarnet } from '../lib/storage';
@@ -30,12 +30,13 @@ function DescriptionWikipedia({ titre }: { titre?: string }) {
   );
 }
 
-type Onglet = 'indices' | 'histoire' | 'caracteristiques' | 'vie' | 'carte' | 'sons' | 'observations' | 'sources';
+type Onglet = 'histoire' | 'caracteristiques' | 'vie' | 'carte' | 'sons' | 'observations' | 'sources';
 
 export default function Fiche() {
   const { id = '' } = useParams();
   const e = especeById(id);
   const carnet = useCarnet();
+  const dec = useDecouvertes();
   const navigate = useNavigate();
   const [form, setForm] = useState(false);
   const [bravo, setBravo] = useState(false);
@@ -47,35 +48,22 @@ export default function Fiche() {
   const decouverte = mesObs.length > 0;
 
   const cases: { id: Onglet; label: string; icone: NomIcone; verrou?: boolean }[] = [
-    ...(!decouverte ? [{ id: 'indices' as const, label: 'Indices', icone: 'indice' as const }] : []),
-    { id: 'histoire', label: 'Histoire', icone: 'histoire', verrou: !decouverte },
-    { id: 'caracteristiques', label: 'Caractéristiques', icone: 'mesure', verrou: !decouverte },
-    ...(e.redigee ? [{ id: 'vie' as const, label: 'Mode de vie', icone: 'feuille' as const, verrou: !decouverte }] : []),
+    // Tout est lisible même avant d'avoir vu l'oiseau : seul le carnet personnel attend une observation.
+    { id: 'histoire', label: 'Histoire', icone: 'histoire' },
+    { id: 'caracteristiques', label: 'Caractéristiques', icone: 'mesure' },
+    ...(e.redigee ? [{ id: 'vie' as const, label: 'Mode de vie', icone: 'feuille' as const }] : []),
     { id: 'carte', label: 'Où l’observer', icone: 'lieu' },
     { id: 'sons', label: 'Sons', icone: 'son' },
     { id: 'observations', label: `Observations${mesObs.length ? ` (${mesObs.length})` : ''}`, icone: 'carnet', verrou: !decouverte },
     { id: 'sources', label: 'Sources', icone: 'sources' },
   ];
-  const onglet = cases.some((c) => c.id === choix) ? choix : decouverte ? 'histoire' : 'indices';
+  const onglet = cases.some((c) => c.id === choix) ? choix! : 'histoire';
+  const proches = especesProches(e);
   const setOnglet = (o: Onglet) => setChoix(o);
   const caseActive = cases.find((c) => c.id === onglet)!;
 
   const contenu = (o: Onglet) => {
     switch (o) {
-      case 'indices':
-        return (
-          <>
-            <ul className="indices">
-              {e.milieux.length > 0 && (
-                <li><strong>Milieux :</strong> {e.milieux.map((m) => `${MILIEU[m].emoji} ${MILIEU[m].label}`).join(', ')}</li>
-              )}
-              {e.taille && <li><strong>Taille :</strong> {e.taille} cm</li>}
-              <li><strong>Famille :</strong> {e.famille}</li>
-              {e.signes.map((x) => <li key={x}>🔎 {x}</li>)}
-            </ul>
-            <p className="petit">Astuce : écoutez ses sons et regardez où et quand l’observer avant de partir.</p>
-          </>
-        );
       case 'histoire':
         return <DescriptionWikipedia titre={e.wiki ?? e.nomScientifique} />;
       case 'caracteristiques':
@@ -89,6 +77,9 @@ export default function Fiche() {
               <div><dt>Régions</dt><dd>{e.presence.length} / 13</dd></div>
               {e.difficulte && <div><dt>Identification</dt><dd>{DIFFICULTE[e.difficulte]}</dd></div>}
             </dl>
+            {!e.redigee && e.milieux.length > 0 && (
+              <p className="milieux">{e.milieux.map((m) => <Badge key={m}>{MILIEU[m].emoji} {MILIEU[m].label}</Badge>)}</p>
+            )}
             {e.redigee && (
               <>
                 <p>{e.description}</p>
@@ -249,12 +240,22 @@ export default function Fiche() {
         {caseActive.verrou ? (
           <div className="verrou-panneau">
             <span className="verrou-icone"><Icone nom="cadenas" taille={32} /></span>
-            <p>Cette rubrique se débloque quand vous avez vu l’oiseau : touchez le bouton orange en bas.</p>
+            <p>Ici s’afficheront vos observations de cet oiseau : touchez le bouton orange en bas quand vous l’aurez vu.</p>
           </div>
         ) : (
           contenu(caseActive.id)
         )}
       </section>
+
+      {proches.length > 0 && (
+        <section className="bloc proches">
+          <h2 className="titre-section"><Icone nom="jumelles" /> Oiseaux de la même famille</h2>
+          <p className="petit">Ses cousins : utile pour ne pas les confondre.</p>
+          <div className="grille-especes">
+            {proches.map((x) => <CarteEspece key={x.id} e={x} decouverte={dec.has(x.id)} />)}
+          </div>
+        </section>
+      )}
 
       <div className="action-fixe">
         <button className="bouton principal" onClick={() => setForm(true)}>

@@ -66,3 +66,32 @@ export function especesDeZone(zone: ZoneId): Espece[] {
   if (!cacheZone.has(zone)) cacheZone.set(zone, ESPECES.filter((e) => e.presence.some((p) => p.zone === zone)));
   return cacheZone.get(zone)!;
 }
+
+/** Familles d'oiseaux si proches qu'on les présente ensemble (ex. mésanges, orite et rémiz). */
+const FAMILLES_VOISINES: string[][] = [
+  ['Paridae', 'Aegithalidae', 'Remizidae', 'Panuridae'],
+  ['Alaudidae', 'Motacillidae'],
+  ['Phylloscopidae', 'Acrocephalidae', 'Locustellidae', 'Cettiidae', 'Cisticolidae', 'Sylviidae', 'Regulidae'],
+  ['Sittidae', 'Certhiidae', 'Tichodromidae'],
+  ['Stercorariidae', 'Laridae'],
+  ['Hydrobatidae', 'Procellariidae'],
+  ['Phalacrocoracidae', 'Sulidae'],
+  ['Accipitridae', 'Pandionidae'],
+];
+
+/** Premier mot du nom français (« Mésange », « Pouillot », « Grive »…), sans article. */
+const premierMot = (nom: string) => nom.split(/[\s-]/)[0].toLowerCase();
+
+/**
+ * Les « variantes » d'un oiseau : les autres espèces de sa famille (ou d'une famille très proche)
+ * et celles qui portent le même nom de groupe (toutes les « Mésanges », tous les « Pouillots »…).
+ * Les plus faciles à voir en premier.
+ */
+export function especesProches(e: Espece, max = 12): Espece[] {
+  const voisines = new Set(FAMILLES_VOISINES.find((g) => g.includes(e.famille)) ?? [e.famille]);
+  const mot = premierMot(e.nom);
+  const poids = (x: Espece) => x.presence.reduce((a, p) => a + p.observations, 0);
+  return ESPECES.filter((x) => x.id !== e.id && (voisines.has(x.famille) || premierMot(x.nom) === mot))
+    .sort((a, b) => Number(premierMot(b.nom) === mot) - Number(premierMot(a.nom) === mot) || Number(b.famille === e.famille) - Number(a.famille === e.famille) || poids(b) - poids(a))
+    .slice(0, max);
+}

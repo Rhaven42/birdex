@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import BarreRecherche from '../components/BarreRecherche';
 import { Anneau, Icone } from '../components/Icones';
-import { CarteEspece } from '../components/ui';
+import { CarteEspece, FondFlou } from '../components/ui';
 import { ESPECES } from '../data/species';
 import { zoneById } from '../data/zones';
 import { useMaRegion } from '../lib/maRegion';
@@ -83,6 +83,7 @@ export default function Accueil() {
 
       {jour && photoJour && (
         <Link to={`/espece/${jour.id}`} className="oiseau-du-jour">
+          <FondFlou src={photoJour.miniature} />
           <img src={photoJour.url} alt="" />
           <div className="odj-voile">
             <span className="odj-etiquette"><Icone nom="soleil" taille={16} /> Oiseau du jour</span>

@@ -30,6 +30,6 @@ describe('recherche guidée « Quel est cet oiseau ? »', () => {
     expect(noms(oiseauxPossibles({ taille: 'm', zone: 'idf' }))).toContain('Martinet noir');
   });
   it('sans aucun choix : tous les oiseaux de la région', () => {
-    expect(oiseauxPossibles({ zone: 'corse' }).length).toBe(186);
+    expect(oiseauxPossibles({ zone: 'corse' }).length).toBe(189);
   });
 });

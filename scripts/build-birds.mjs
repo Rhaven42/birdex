@@ -112,7 +112,20 @@ const SYNONYMES = {
   'Puffinus gravis': 'Ardenna gravis',
   'Puffinus griseus': 'Ardenna grisea',
   'Calidris falcinellus': 'Calidris falcinellus',
+  'Porzana parva': 'Zapornia parva',
+  'Porzana pusilla': 'Zapornia pusilla',
 };
+// Espèces rares mais régulières en France (indigènes, non « erratiques » d'après la liste de la
+// Commission de l'avifaune française / liste rouge UICN France) : peu observées, souvent un ou deux
+// mois par an seulement. Seuils assouplis, mais toujours notées au moins 5 années sur 11 dans la région.
+const RARES_REGULIERES = new Set([
+  'Anser fabalis', 'Zapornia parva', 'Zapornia pusilla', 'Stercorarius longicaudus', 'Phylloscopus ibericus',
+  'Acrocephalus paludicola', 'Larus hyperboreus', 'Alle alle', 'Buteo lagopus', 'Chlidonias leucopterus',
+  'Carpodacus erythrinus', 'Emberiza melanocephala', 'Passer hispaniolensis', 'Anthus cervinus', 'Microcarbo pygmaeus',
+]);
+// Parmi elles, celles qui nichent en France (statut « nicheur » de la liste rouge UICN France) ;
+// les autres, vues seulement quelques semaines au printemps ou en été, sont des migratrices de passage.
+const RARES_NICHEUSES = new Set(['Zapornia parva', 'Zapornia pusilla', 'Phylloscopus ibericus', 'Carpodacus erythrinus', 'Emberiza melanocephala', 'Passer hispaniolensis']);
 // Oiseaux échappés de captivité, domestiques ou relâchés, non installés durablement en France.
 const EXCLUES = new Set([
   'Anas bahamensis', 'Phoenicopterus ruber', 'Phoeniconaias minor', 'Callipepla californica', 'Aix sponsa',
@@ -152,19 +165,19 @@ const PART_MIN = 5e-5; // 0,005 % des observations d'oiseaux de la région
 const MIN_MOIS = 3; // présent au moins 3 mois → exclut la plupart des oiseaux égarés
 const MIN_ANNEES = 5; // noté (≥ 3 observations) au moins 5 années sur 11
 
-function presence(cles, region) {
+function presence(cles, region, souple = false) {
   const c = comptages[region.id];
   const n = Array.from({ length: 12 }, (_, i) => cles.reduce((a, k) => a + (c[i + 1].especes[k] ?? 0), 0));
   const parts = n.map((x, i) => x / c[i + 1].total);
   const annuel = n.reduce((a, b) => a + b, 0);
   const totalRegion = Object.values(c).reduce((a, x) => a + x.total, 0);
   const pic = Math.max(...parts);
-  if (annuel < MIN_ANNUEL || annuel / totalRegion < PART_MIN) return null;
+  if (souple ? annuel < 15 : annuel < MIN_ANNUEL || annuel / totalRegion < PART_MIN) return null;
   const nbAnnees = LES_ANNEES.filter((a) => cles.reduce((x, k) => x + (annees[region.id][a][k] ?? 0), 0) >= 3).length;
   if (nbAnnees < MIN_ANNEES) return null;
   // Un mois compte si l'espèce y atteint au moins 20 % de sa fréquence maximale, avec 5 observations minimum.
-  const mois = parts.map((p, i) => (p >= 0.2 * pic && n[i] >= 5 ? i + 1 : 0)).filter(Boolean);
-  if (mois.length < MIN_MOIS) return null;
+  const mois = parts.map((p, i) => (p >= 0.2 * pic && n[i] >= (souple ? 2 : 5) ? i + 1 : 0)).filter(Boolean);
+  if (mois.length < (souple ? 1 : MIN_MOIS)) return null;
   const has = (...ms) => ms.some((m) => mois.includes(m));
   let statut;
   if (mois.length >= 10 || (has(6) && has(1))) statut = 'sedentaire';
@@ -175,6 +188,7 @@ function presence(cles, region) {
   let abondance = pic >= 2e-3 ? 'commune' : pic >= 3e-4 ? 'peu-commune' : 'rare';
   if (nbAnnees < 9 && abondance === 'commune') abondance = 'peu-commune';
   if (nbAnnees < 7) abondance = 'rare';
+  if (souple && abondance === 'commune') abondance = 'peu-commune';
   // Indice mensuel 0–100 (pour la carte animée par mois)
   const indice = parts.map((p) => Math.round((p / pic) * 100));
   return { zone: region.id, statut, abondance, mois, observations: annuel, annees: nbAnnees, indice };
@@ -182,10 +196,12 @@ function presence(cles, region) {
 
 const retenues = [];
 for (const [sci, cles] of groupes) {
-  const pres = REGIONS.map((r) => presence(cles, r)).filter(Boolean);
+  const souple = RARES_REGULIERES.has(sci);
+  const pres = REGIONS.map((r) => presence(cles, r, souple)).filter(Boolean);
+  if (souple && !RARES_NICHEUSES.has(sci)) for (const p of pres) if (p.statut === 'estivant') p.statut = 'passage';
   if (!pres.length) continue;
   // Oiseau égaré : uniquement « rare », dans une ou deux régions → écarté
-  if (pres.length <= 2 && pres.every((p) => p.abondance === 'rare')) continue;
+  if (!souple && pres.length <= 2 && pres.every((p) => p.abondance === 'rare')) continue;
   const principale = cles.find((k) => taxo[k].sci === sci) ?? cles.sort((x, y) => totalNational(y) - totalNational(x))[0];
   retenues.push({ key: principale, cles, sci, famille: taxo[principale].famille, ordre: taxo[principale].ordre, rang: 'SPECIES', presence: pres });
 }

@@ -442,7 +442,7 @@ body { background: radial-gradient(1200px 600px at 100% -10%, #e3f6f5 0%, transp
 .lien-badges span:nth-child(2) { flex: 1; }
 .lb-compte { color: var(--doux); font-weight: 800; }
 .bandeau-charte { background: var(--degrade); gap: 0.8rem; box-shadow: 0 10px 30px rgba(31, 111, 208, 0.2); }
-.bandeau-charte .bc-icone { background: rgba(255, 255, 255, 0.18); color: #fff; }
+.bandeau-charte .bc-icone { background: rgba(255, 255, 255, 0.18); color: #fff; flex: 0 0 42px; }
 .bandeau-charte span:nth-child(2) { flex: 1; line-height: 1.3; font-size: 0.9rem; }
 
 /* Liste des régions : deux colonnes dès que possible */
@@ -634,3 +634,17 @@ html.texte-tres-grand { font-size: 125%; }
 .resultats-guide { margin-top: 0.8rem; display: grid; gap: 0.6rem; }
 .resultats-guide .lien-discret { background: none; border: 0; font: inherit; cursor: pointer; }
 .en-couleur .carte-espece-visuel img { filter: none !important; opacity: 1 !important; }
+
+/* ───── Photos entières : l'oiseau n'est jamais recadré (tête et corps visibles) ───── */
+.fond-flou { position: absolute; inset: -12px; background-size: cover; background-position: center; filter: blur(14px) saturate(1.1) brightness(0.92); z-index: 0; }
+.carte-espece-visuel img, .photo-cadre img, .oiseau-du-jour img { position: relative; z-index: 1; object-fit: contain !important; }
+.carte-espece-visuel .cadenas, .photo-cadre .bandeau-decouvrir, .photo-cadre .photo-voile, .odj-voile, .odj-fleche { z-index: 2; }
+.carte-espece-visuel img { position: absolute; }
+.photo-cadre { overflow: hidden; background: var(--navy); }
+.photo-cadre img { width: 100%; aspect-ratio: 4 / 3; display: block; }
+/* Le nom passe sous la photo (et non plus par-dessus) pour ne rien cacher de l'oiseau */
+.photo-cadre .photo-voile { position: relative; inset: auto; padding: 0.8rem 1.1rem 0.9rem; background: var(--navy); }
+.oiseau-du-jour { height: 250px; background: var(--navy); }
+.oiseau-du-jour img { height: calc(100% - 4.6rem); }
+.odj-voile { padding: 0.6rem 1rem 0.8rem; background: var(--navy); }
+.carte-espece:hover .carte-espece-visuel img, .oiseau-du-jour:hover img { transform: none; }
