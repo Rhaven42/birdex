@@ -266,3 +266,25 @@ details > summary { font-weight: 800; color: var(--blue); cursor: pointer; paddi
 .repartition-detail { margin-top: 0.6rem; padding: 0.6rem 0.8rem; background: var(--fond); border-radius: 10px; font-size: 0.9rem; }
 .calendrier-details { margin-top: 0.8rem; }
 .filtre-texte { flex: 1 1 200px; border: 2px solid var(--bord); border-radius: 999px; padding: 0.45rem 0.9rem; min-height: 40px; }
+
+/* Lecteur de sons */
+.pistes { list-style: none; padding: 0; margin: 0 0 0.8rem; display: grid; gap: 0.7rem; }
+.piste { background: var(--fond); border-radius: 14px; padding: 0.7rem; }
+.piste-tete { display: flex; align-items: center; gap: 0.7rem; }
+.lecture { width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%; border: 0; background: var(--orange); color: #fff; font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 8px rgba(255, 122, 20, 0.35); }
+.lecture.pause { background: var(--navy); box-shadow: none; }
+.piste-titre { display: flex; flex-direction: column; min-width: 0; }
+.piste-titre strong { color: var(--navy); }
+.piste-titre span { font-size: 0.8rem; color: var(--doux); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sono { position: relative; margin: 0.6rem 0 0.4rem; border-radius: 8px; overflow: hidden; background: #fff; }
+.sono img { width: 100%; height: 72px; object-fit: fill; display: block; }
+.sono-curseur { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--orange); }
+.piste-options { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 0.4rem; }
+.petit-segment button { min-height: 34px; padding: 0.2rem 0.7rem; font-size: 0.85rem; }
+.credit { font-size: 0.72rem; color: var(--doux); margin: 0.4rem 0 0; }
+.comparaison { border-top: 2px dashed var(--bord); padding-top: 0.6rem; }
+.comparaison input { width: 100%; border: 2px solid var(--bord); border-radius: 999px; padding: 0.6rem 0.9rem; }
+.suggestions-inline { list-style: none; padding: 0; margin: 0.4rem 0; }
+.suggestions-inline button { width: 100%; text-align: left; background: none; border: 0; padding: 0.6rem 0.4rem; border-radius: 8px; cursor: pointer; font: inherit; }
+.suggestions-inline button:hover { background: var(--teal-clair); }
+.suggestions-inline em { color: var(--doux); font-size: 0.85rem; }

@@ -1,0 +1,29 @@
+name: Sons xeno-canto
+
+# Lancement manuel : onglet « Actions » du dépôt → « Sons xeno-canto » → « Run workflow ».
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Récupérer les enregistrements
+        env:
+          XC_KEY: ${{ secrets.XC_KEY }}
+        run: node scripts/build-sons.mjs
+      - name: Enregistrer sons.json dans le dépôt
+        run: |
+          git config user.name "birdex-bot"
+          git config user.email "birdex-bot@users.noreply.github.com"
+          git add src/data/sons.json
+          git diff --cached --quiet || git commit -m "Met à jour les enregistrements xeno-canto"
+          git push

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Calendrier from '../components/Calendrier';
 import CarteRepartition from '../components/CarteRepartition';
 import FormulaireObservation from '../components/FormulaireObservation';
+import LecteurSons from '../components/LecteurSons';
 import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece, Silhouette } from '../components/ui';
 import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
 import { zoneById } from '../data/zones';
@@ -39,7 +40,6 @@ export default function Fiche() {
 
   const mesObs = carnet.filter((o) => o.especeId === e.id);
   const decouverte = mesObs.length > 0;
-  const xenoCanto = `https://xeno-canto.org/explore?query=${encodeURIComponent(e.nomScientifique)}`;
 
   return (
     <div className="page fiche">
@@ -119,6 +119,13 @@ export default function Fiche() {
         )}
       </section>
 
+      <section className="bloc">
+        <h2>Chant et cris</h2>
+        {!decouverte && <p className="petit">Écoutez-le avant de partir : on entend souvent un oiseau bien avant de le voir.</p>}
+        <LecteurSons e={e} />
+        <p className="petit">⚠️ Ne diffusez pas ces sons dans la nature pour attirer les oiseaux, surtout en période de nidification.</p>
+      </section>
+
       {decouverte && (
         <>
           <section className="bloc">
@@ -159,15 +166,6 @@ export default function Fiche() {
           )}
 
           <section className="bloc">
-            <h2>Chant et cris</h2>
-            <p>
-              Le lecteur intégré arrive bientôt. En attendant, écoutez les enregistrements libres sur{' '}
-              <a href={xenoCanto} target="_blank" rel="noreferrer">xeno-canto ↗</a>.
-            </p>
-            <p className="petit">⚠️ Ne diffusez pas de chants pour attirer les oiseaux, surtout en période de nidification.</p>
-          </section>
-
-          <section className="bloc">
             <h2>Mes observations ({mesObs.length})</h2>
             <ul className="liste-obs">
               {mesObs.map((o) => (
@@ -198,6 +196,7 @@ export default function Fiche() {
               )}
               {e.redigee && <li>Textes rédigés à partir de l’INPN (MNHN) et de la LPO.</li>}
               {!e.redigee && e.wiki && <li>Description : Wikipédia (CC BY-SA 4.0).</li>}
+              <li>Sons : <a href="https://xeno-canto.org" target="_blank" rel="noreferrer">xeno-canto</a> (auteurs et licences indiqués sous chaque enregistrement).</li>
             </ul>
             <p className="petit">Données générées le {dateFr(SOURCES_DONNEES.genereLe)} · fiches mises à jour le {dateFr(DATE_MAJ)}.</p>
           </section>

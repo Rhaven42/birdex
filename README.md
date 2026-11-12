@@ -32,6 +32,17 @@ Critères pour qu'une espèce compte dans une région : ≥ 40 observations, ≥
 
 Limites connues : l'abondance reflète la fréquence des signalements (biais d'observation) ; la Liste rouge France et les statuts de protection de l'INPN n'ont pas pu être interrogés automatiquement (protection anti-robots) et ne sont affichés que sur les 52 fiches rédigées.
 
+## Sons (xeno-canto)
+
+Chaque fiche propose des chants et cris issus de [xeno-canto](https://xeno-canto.org) (lecture, ralenti ×0,75/×0,5, boucle, sonogramme, comparaison avec une autre espèce), avec l'auteur et la licence de chaque enregistrement. Les fichiers sont lus directement depuis xeno-canto.
+
+La sélection (`src/data/sons.json`) est générée par `scripts/build-sons.mjs` avec une clé API xeno-canto, jamais stockée dans le dépôt :
+
+1. Dépôt GitHub → **Settings → Secrets and variables → Actions → New repository secret** : nom `XC_KEY`, valeur = votre clé (page « Account » de xeno-canto).
+2. Onglet **Actions → Sons xeno-canto → Run workflow**. Le fichier `sons.json` est mis à jour automatiquement.
+
+En local : `XC_KEY=… npm run sons`.
+
 ## Architecture
 
 ```
