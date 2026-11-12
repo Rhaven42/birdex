@@ -9,6 +9,7 @@ import type { Presence } from '../data/types';
 import { Silhouette } from '../components/ui';
 import { photoDe } from '../lib/media';
 import { Icone } from '../components/Icones';
+import GuideOiseau from '../components/GuideOiseau';
 
 /** Période la plus fréquente parmi les régions (ex. « printemps–été, d’avril à août »). */
 function resumePeriode(pres: Presence[]) {
@@ -29,8 +30,10 @@ export default function Recherche() {
 
   return (
     <div className="page">
-      <h1 className="titre-section">Rechercher un oiseau</h1>
-      <BarreRecherche key={q} valeurInitiale={q} autoFocus={!q} />
+      <h1 className="titre-section">Chercher un oiseau</h1>
+      <p className="consigne">Vous connaissez son nom ? Tapez-le ici :</p>
+      <BarreRecherche key={q} valeurInitiale={q} />
+      {!q && <GuideOiseau />}
       {q && (
         <p className="petit">
           {resultats.length} résultat{resultats.length > 1 ? 's' : ''} pour « {q} »

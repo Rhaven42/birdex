@@ -616,3 +616,21 @@ html.texte-tres-grand { font-size: 125%; }
 .mdp-oublie label:not(.case) { display: grid; gap: 0.25rem; font-weight: 800; color: var(--navy); }
 .mdp-oublie input:not([type='checkbox']) { border: 2px solid var(--bord); border-radius: 12px; padding: 0.7rem 0.9rem; min-height: 52px; font-weight: 400; }
 .champ-code { font-size: 1.6rem !important; letter-spacing: 0.4em; text-align: center; font-weight: 800 !important; }
+
+/* Recherche guidée « Quel est cet oiseau ? » */
+.guide { margin-top: 1rem; }
+.guide h3 { font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+.choix-tailles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.choix-tailles button { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0.15rem; min-height: 132px; padding: 0.6rem 0.3rem; border: 2px solid var(--bord); border-radius: 18px; background: #fff; color: var(--navy); font: inherit; cursor: pointer; text-align: center; }
+.choix-tailles button strong { font-size: 1.1rem; }
+.choix-tailles button span:last-child { font-size: 0.85rem; color: var(--doux); line-height: 1.25; }
+.ct-silhouette { display: grid; place-items: end center; }
+.ct-silhouette .silhouette { width: 100%; height: 100%; fill: var(--teal); color: var(--teal); }
+.choix-milieux { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.choix-milieux button { display: flex; align-items: center; gap: 0.5rem; min-height: 60px; padding: 0.5rem 0.7rem; border: 2px solid var(--bord); border-radius: 16px; background: #fff; color: var(--navy); font: inherit; font-weight: 800; font-size: 0.98rem; text-align: left; cursor: pointer; line-height: 1.25; }
+.choix-milieux button span { font-size: 1.5rem; }
+.choix-tailles button.actif, .choix-milieux button.actif { border-color: var(--orange-fonce); background: var(--orange-clair); box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.2); }
+.guide .plus-filtres { margin-top: 0.8rem; }
+.resultats-guide { margin-top: 0.8rem; display: grid; gap: 0.6rem; }
+.resultats-guide .lien-discret { background: none; border: 0; font: inherit; cursor: pointer; }
+.en-couleur .carte-espece-visuel img { filter: none !important; opacity: 1 !important; }

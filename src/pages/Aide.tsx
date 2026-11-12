@@ -5,7 +5,7 @@ import { revoirBienvenue } from '../components/Bienvenue';
 const QUESTIONS: [string, string][] = [
   ['Comment trouver les oiseaux de chez moi ?', 'Sur l’accueil, touchez « Voir les oiseaux de ma région ». La liste montre les oiseaux qui vivent ou passent près de chez vous.'],
   ['J’ai vu un oiseau, que faire ?', 'Ouvrez sa fiche (touchez-le dans la liste, ou cherchez son nom avec la loupe), puis touchez le gros bouton orange « J’ai vu cet oiseau ! ». Il rejoint votre collection.'],
-  ['Je ne connais pas son nom…', 'Touchez « Chercher » en bas et tapez une partie du nom, même avec une faute : « merle », « mesange », « rouge gorge »… Vous pouvez aussi parcourir les photos de votre région.'],
+  ['Je ne connais pas son nom…', 'Touchez « Chercher » en bas, puis, dans « Quel est cet oiseau ? », touchez sa taille (petit, moyen ou grand) et l’endroit où vous l’avez vu. Birdex vous montre les oiseaux possibles, les plus courants en premier. Si vous connaissez une partie du nom, tapez-la, même avec une faute.'],
   ['Comment écouter son chant ?', 'Sur la fiche de l’oiseau, touchez la case « Sons », puis le rond orange ▶. Le bouton « ×0,5 » le fait chanter plus lentement.'],
   ['Pourquoi certaines photos sont en noir et blanc ?', 'Ce sont les oiseaux que vous n’avez pas encore vus. Ils passent en couleur dès que vous les ajoutez à votre collection.'],
   ['Comment changer de région ?', 'Sur l’accueil, sous « Ma région », touchez « Changer ma région ».'],

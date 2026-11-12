@@ -76,11 +76,11 @@ function ImageFiable({ src, onEchec, ...rest }: ImgHTMLAttributes<HTMLImageEleme
   );
 }
 
-export function CarteEspece({ e, decouverte, sousTitre }: { e: Espece; decouverte: boolean; sousTitre?: ReactNode }) {
+export function CarteEspece({ e, decouverte, sousTitre, enCouleur = false }: { e: Espece; decouverte: boolean; sousTitre?: ReactNode; enCouleur?: boolean }) {
   const photo = photoDe(e);
   const [ko, setKo] = useState(false);
   return (
-    <Link to={`/espece/${e.id}`} className={`carte-espece ${decouverte ? 'decouverte' : 'verrouillee'}`}>
+    <Link to={`/espece/${e.id}`} className={`carte-espece ${decouverte ? 'decouverte' : 'verrouillee'} ${enCouleur ? 'en-couleur' : ''}`}>
       <div className="carte-espece-visuel">
         {photo && !ko ? <ImageFiable src={photo.miniature} alt="" loading="lazy" decoding="async" onEchec={() => setKo(true)} /> : <Silhouette />}
         {!decouverte && <span className="cadenas" aria-label="À découvrir">🔒</span>}
