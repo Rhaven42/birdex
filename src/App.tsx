@@ -9,6 +9,8 @@ import Carnet from './pages/Carnet';
 import Charte from './pages/Charte';
 import Badges from './pages/Badges';
 import Compte from './pages/Compte';
+import Identifier from './pages/Identifier';
+import { identificationActive } from './lib/identification';
 import { comptesActifs } from './lib/supabase';
 import { useSession, useEtatSynchro } from './lib/sync';
 import { nouvelApk, PAGE_APK } from './lib/natif';
@@ -104,15 +106,16 @@ export default function App() {
           <Route path="/charte" element={<Charte />} />
           <Route path="/badges" element={<Badges />} />
           <Route path="/compte" element={<Compte />} />
+          <Route path="/identifier" element={<Identifier />} />
           <Route path="*" element={<div className="page"><p>Page introuvable.</p><Link to="/">Accueil</Link></div>} />
         </Routes>
         </div>
         </GardeFou>
       </main>
 
-      <nav className="nav-bas" aria-label="Navigation principale">
-        {NAV.map((n) => (
-          <NavLink key={n.to} to={n.to} end={n.to === '/'}>
+      <nav className={`nav-bas ${identificationActive ? 'cinq' : ''}`} aria-label="Navigation principale">
+        {(identificationActive ? [...NAV.slice(0, 2), { to: '/identifier', label: 'Identifier', icone: 'appareil' as const }, ...NAV.slice(2)] : NAV).map((n) => (
+          <NavLink key={n.to} to={n.to} end={n.to === '/'} className={n.to === '/identifier' ? 'nav-identifier' : undefined}>
             <span className="nav-icone"><Icone nom={n.icone} /></span>
             {n.label}
           </NavLink>

@@ -477,3 +477,43 @@ body { background: radial-gradient(1200px 600px at 100% -10%, #e3f6f5 0%, transp
 .formulaire-compte input:focus { border-color: var(--teal); outline: none; }
 .bandeau-maj { display: flex; align-items: center; gap: 0.8rem; justify-content: space-between; margin: 0.6rem 1rem 0; padding: 0.7rem 0.9rem; border-radius: 16px; background: var(--orange-clair); color: var(--navy); font-weight: 700; font-size: 0.9rem; }
 .bandeau-maj .bouton { min-height: 40px; padding: 0.4rem 1rem; flex-shrink: 0; }
+
+/* Identification par photo */
+.nav-bas.cinq { grid-template-columns: repeat(5, 1fr); }
+.nav-bas a { font-size: 0.72rem; }
+.nav-identifier .nav-icone { background: linear-gradient(135deg, #ff8a2b, #ff6a00); color: #fff; width: 52px; height: 36px; box-shadow: 0 4px 12px rgba(255, 122, 20, 0.35); }
+.nav-bas a.nav-identifier.active .nav-icone { background: linear-gradient(135deg, #ff8a2b, #ff6a00); color: #fff; }
+.appel-identifier { display: flex; align-items: center; gap: 0.8rem; margin: 0 0 1rem; padding: 0.9rem 1rem; border-radius: 20px; background: linear-gradient(135deg, #ff8a2b, #ff6a00); color: #fff; text-decoration: none; box-shadow: 0 10px 26px rgba(255, 122, 20, 0.3); }
+.appel-identifier span:nth-child(2) { flex: 1; font-size: 0.88rem; line-height: 1.35; }
+.appel-identifier strong { font-size: 1.05rem; }
+.ai-icone { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 16px; background: rgba(255, 255, 255, 0.2); flex-shrink: 0; }
+.identification { display: grid; gap: 0.9rem; }
+.zone-photo { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 2rem 1rem; border: 2px dashed var(--teal); border-radius: 20px; background: var(--teal-clair); color: var(--navy); font: inherit; cursor: pointer; }
+.zone-photo svg { color: var(--teal); }
+.zone-photo span { font-size: 0.85rem; color: var(--doux); }
+.apercu-identification { width: 100%; max-height: 360px; object-fit: contain; border-radius: 18px; background: #0b1726; }
+.champ-region { display: grid; gap: 0.3rem; font-weight: 800; color: var(--navy); font-size: 0.9rem; }
+.champ-region select { border: 2px solid var(--bord); border-radius: 12px; padding: 0.6rem 0.8rem; font-weight: 400; min-height: 46px; background: #fff; }
+.identification .bouton.principal { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+.analyse { display: flex; align-items: center; gap: 0.35rem; color: var(--doux); font-size: 0.88rem; }
+.analyse span { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); animation: pulsation 1s infinite ease-in-out; }
+.analyse span:nth-child(2) { animation-delay: 0.15s; }
+.analyse span:nth-child(3) { animation-delay: 0.3s; margin-right: 0.3rem; }
+@keyframes pulsation { 0%, 100% { opacity: 0.25; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
+.propositions { list-style: none; padding: 0; margin: 0.6rem 0; display: grid; gap: 0.8rem; }
+.propositions li { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.8rem; border-radius: 18px; border: 1px solid var(--bord); background: #fff; }
+.propositions li.premiere { border: 2px solid var(--orange); box-shadow: 0 6px 18px rgba(255, 122, 20, 0.15); }
+.propositions img { width: 92px; height: 92px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
+.prop-texte { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; flex: 1; }
+.prop-texte strong { color: var(--navy); font-size: 1.05rem; }
+.prop-texte em { color: var(--doux); font-size: 0.85rem; }
+.prop-texte p { margin: 0.2rem 0; font-size: 0.88rem; }
+.prop-texte .pastille { align-self: flex-start; }
+.prop-texte .actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.prop-texte .bouton { min-height: 40px; padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+.jauge { height: 8px; border-radius: 99px; background: #e6edf4; overflow: hidden; }
+.jauge span { display: block; height: 100%; border-radius: 99px; }
+.jauge .ab-commune { background: var(--ab-commune); }
+.jauge .ab-peu-commune { background: var(--ab-peu); }
+.jauge .ab-rare { background: var(--ab-rare); }
+@media (prefers-reduced-motion: reduce) { .analyse span { animation: none; opacity: 1; } }

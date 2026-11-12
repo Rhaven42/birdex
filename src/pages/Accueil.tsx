@@ -9,6 +9,7 @@ import { useCarnet, useDecouvertes } from '../lib/hooks';
 import { MOIS_LONGS, moisCourant } from '../lib/format';
 import { photoDe } from '../lib/media';
 import { progressionZones } from '../lib/progression';
+import { identificationActive } from '../lib/identification';
 
 function salutation() {
   const h = new Date().getHours();
@@ -54,6 +55,12 @@ export default function Accueil() {
           <small>/ {ESPECES.length}</small>
         </Anneau>
       </section>
+
+      {identificationActive && <Link to="/identifier" className="appel-identifier">
+        <span className="ai-icone"><Icone nom="appareil" taille={28} /></span>
+        <span><strong>Identifier un oiseau</strong><br />Prenez-le en photo, l’IA vous propose des espèces</span>
+        <Icone nom="suivant" />
+      </Link>}
 
       <BarreRecherche />
 
