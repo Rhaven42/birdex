@@ -40,6 +40,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,webp,woff2,json}'],
+        // Le code de l'application (données des 355 espèces comprises) dépasse 2 Mo : on le garde quand même hors connexion
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {
             // Photos Wikimedia : mises en cache pour une consultation hors connexion

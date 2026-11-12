@@ -7,7 +7,7 @@ export const SUPABASE_URL = 'https://itsxeyuiwdgwgjlfdfne.supabase.co';
 export const SUPABASE_CLE_PUBLIQUE: string = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'sb_publishable_wFtaDzlbvee3WtIA1_9vxw_WcWpEZA4';
 
 // Interrupteur : activé seulement une fois la base (supabase/birdex.sql) installée et testée de bout en bout
-const COMPTES_OUVERTS = false;
+const COMPTES_OUVERTS = true;
 
 export const comptesActifs = COMPTES_OUVERTS && SUPABASE_CLE_PUBLIQUE.length > 0;
 

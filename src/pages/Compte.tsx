@@ -70,7 +70,7 @@ function Formulaire() {
         {attente ? 'Un instant…' : mode === 'inscription' ? 'Créer mon compte' : 'Me connecter'}
       </button>
       <p className="petit">
-        Votre carnet actuel est conservé et envoyé dans votre compte. Données hébergées en Europe par Supabase ; vous pouvez supprimer votre compte à tout moment.
+        Votre carnet actuel est conservé et envoyé dans votre compte. Données hébergées par Supabase ; vous pouvez supprimer votre compte à tout moment.
       </p>
     </form>
   );
