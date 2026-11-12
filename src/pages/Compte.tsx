@@ -184,7 +184,7 @@ export default function Compte() {
         </>
       )}
 
-      <p className="petit"><Link to="/carnet">Voir mon carnet</Link></p>
+      <Link to="/aide" className="bouton secondaire large aide-compte">Comment ça marche ?</Link>
     </div>
   );
 }

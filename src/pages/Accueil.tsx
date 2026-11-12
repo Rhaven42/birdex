@@ -103,6 +103,12 @@ export default function Accueil() {
         </section>
       )}
 
+      <Link to="/aide" className="lien-aide">
+        <span className="la-icone" aria-hidden="true">?</span>
+        <span><strong>Comment ça marche ?</strong><br />Toutes les réponses à vos questions</span>
+        <Icone nom="suivant" />
+      </Link>
+
       <Link to="/charte" className="bandeau-charte">
         <span className="bc-icone"><Icone nom="feuille" /></span>
         <span><strong>Charte du bon observateur</strong><br />Observer sans déranger</span>

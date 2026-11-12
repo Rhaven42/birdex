@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Anneau, Icone } from '../components/Icones';
 import { CarteEspece, Progression } from '../components/ui';
 import { evaluerBadges } from '../lib/badges';
-import { ESPECES } from '../data/species';
-import { ZONES } from '../data/zones';
+import { ESPECES, especesDeZone } from '../data/species';
+import { useState } from 'react';
+import { useMaRegion } from '../lib/maRegion';
+import { ZONES, zoneById } from '../data/zones';
 import { useCarnet, useDecouvertes } from '../lib/hooks';
 import { progressionZones } from '../lib/progression';
 
@@ -13,7 +15,10 @@ export default function Collection() {
   const prog = progressionZones(dec);
   const badges = evaluerBadges(carnet);
   const familles = [...new Set(ESPECES.map((e) => e.famille))].sort((a, b) => a.localeCompare(b, 'fr'));
-  const trie = [...ESPECES].sort((a, b) => Number(dec.has(b.id)) - Number(dec.has(a.id)) || a.nom.localeCompare(b.nom, 'fr'));
+  const maRegion = useMaRegion();
+  const [portee, setPortee] = useState<'region' | 'france'>(maRegion ? 'region' : 'france');
+  const liste = portee === 'region' && maRegion ? especesDeZone(maRegion) : ESPECES;
+  const trie = [...liste].sort((a, b) => Number(dec.has(b.id)) - Number(dec.has(a.id)) || a.nom.localeCompare(b.nom, 'fr'));
 
   return (
     <div className="page">
@@ -47,6 +52,19 @@ export default function Collection() {
           ))}
         </details>
       </section>
+      {maRegion && (
+        <div className="segment portee" role="group" aria-label="Oiseaux affichés">
+          <button className={portee === 'region' ? 'actif' : ''} aria-pressed={portee === 'region'} onClick={() => setPortee('region')}>
+            {zoneById(maRegion)?.nom}
+          </button>
+          <button className={portee === 'france' ? 'actif' : ''} aria-pressed={portee === 'france'} onClick={() => setPortee('france')}>
+            Toute la France
+          </button>
+        </div>
+      )}
+      <p className="consigne">
+        {trie.filter((e) => dec.has(e.id)).length} oiseau{trie.filter((e) => dec.has(e.id)).length > 1 ? 'x' : ''} découvert{trie.filter((e) => dec.has(e.id)).length > 1 ? 's' : ''} sur {trie.length} — les oiseaux découverts sont en couleur.
+      </p>
       <div className="grille-especes">
         {trie.map((e) => <CarteEspece key={e.id} e={e} decouverte={dec.has(e.id)} />)}
       </div>

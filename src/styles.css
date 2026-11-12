@@ -587,3 +587,28 @@ html.texte-tres-grand { font-size: 125%; }
 .mf-photo figcaption { padding: 0.5rem 0.6rem; display: grid; gap: 0.2rem; }
 .mf-photo figcaption strong { font-size: 1.1rem; color: var(--navy); }
 .mf-credit { font-size: 0.85rem; color: var(--doux); text-decoration: none; overflow-wrap: anywhere; }
+
+/* Bienvenue (premier lancement) */
+.bienvenue { position: fixed; inset: 0; z-index: 50; background: linear-gradient(160deg, #0b2b55, #1f6fd0 60%, #16b1ad); display: flex; align-items: center; justify-content: center; padding: 1rem; overflow: auto; }
+.bv-carte { background: #fff; border-radius: 28px; padding: 1.4rem 1.2rem; max-width: 440px; width: 100%; text-align: center; display: grid; gap: 0.6rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25); }
+.bv-logo { width: 180px; justify-self: center; }
+.bv-etape { margin: 0; color: var(--doux); font-weight: 800; }
+.bv-emoji { font-size: 4rem; line-height: 1.1; }
+.bv-carte h1 { margin: 0; font-size: 1.6rem; font-weight: 900; }
+.bv-texte { font-size: 1.15rem; margin: 0 0 0.4rem; }
+.bv-points { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+.bv-points span { width: 12px; height: 12px; border-radius: 50%; background: var(--bord); }
+.bv-points span.actif { background: var(--orange-fonce); }
+.bv-carte .bouton.large { width: 100%; margin: 0; }
+.bv-carte .lien-discret { background: none; border: 0; font: inherit; font-weight: 800; color: var(--blue); cursor: pointer; }
+/* Aide */
+.faq { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.faq details { margin: 0; padding: 0.4rem 1rem; }
+.faq summary { font-size: 1.1rem; font-weight: 800; color: var(--navy); min-height: 56px; display: flex; align-items: center; cursor: pointer; }
+.faq p { font-size: 1.05rem; margin: 0.2rem 0 0.8rem; }
+.lien-aide { display: flex; align-items: center; gap: 0.8rem; margin: 1rem 0; padding: 0.9rem 1rem; border-radius: 20px; background: #fff; border: 2px solid var(--teal); color: var(--navy); text-decoration: none; box-shadow: var(--ombre); }
+.lien-aide span:nth-child(2) { flex: 1; line-height: 1.35; }
+.la-icone { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--teal-clair); color: var(--teal); font-weight: 900; font-size: 1.5rem; flex-shrink: 0; }
+.aide-compte { display: block; text-align: center; margin-top: 1rem; }
+.segment.portee { display: grid; grid-template-columns: 1fr 1fr; margin: 1rem 0 0.6rem; }
+.segment.portee button { border-radius: 16px; }

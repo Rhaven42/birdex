@@ -10,6 +10,8 @@ import Charte from './pages/Charte';
 import Badges from './pages/Badges';
 import Compte from './pages/Compte';
 import Regions from './pages/Regions';
+import Aide from './pages/Aide';
+import Bienvenue, { bienvenueVue } from './components/Bienvenue';
 import { comptesActifs } from './lib/supabase';
 import { useSession, useEtatSynchro } from './lib/sync';
 import { nouvelApk, PAGE_APK } from './lib/natif';
@@ -74,6 +76,7 @@ const NAV: { to: string; label: string; icone: NomIcone }[] = [
 
 export default function App() {
   const { pathname } = useLocation();
+  const [bienvenue, setBienvenue] = useState(() => !bienvenueVue());
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -91,6 +94,7 @@ export default function App() {
         {comptesActifs && <BoutonCompte />}
       </header>
 
+      {bienvenue && <Bienvenue onFin={() => setBienvenue(false)} />}
       <BandeauNouvelApk />
       <main>
         <GardeFou cle={pathname}>
@@ -106,6 +110,7 @@ export default function App() {
           <Route path="/badges" element={<Badges />} />
           <Route path="/compte" element={<Compte />} />
           <Route path="/regions" element={<Regions />} />
+          <Route path="/aide" element={<Aide />} />
           <Route path="*" element={<div className="page"><p>Page introuvable.</p><Link to="/">Accueil</Link></div>} />
         </Routes>
         </div>
