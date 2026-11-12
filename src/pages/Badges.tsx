@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Anneau, Icone } from '../components/Icones';
 import { BADGES, defisSaisonniers, evaluerBadges, type EtatDefi, type EtatBadge } from '../lib/badges';
 import { useCarnet } from '../lib/hooks';
 
@@ -28,9 +29,18 @@ export default function Badges() {
 
   return (
     <div className="page">
-      <Link to="/collection" className="retour">‹ Collection</Link>
-      <h1 className="titre-section">Badges et défis</h1>
-      <p className="petit">{nb} badge{nb > 1 ? 's' : ''} sur {badges.length}. Chaque observation validée vous fait progresser.</p>
+      <Link to="/collection" className="retour"><Icone nom="retour" taille={18} /> Collection</Link>
+      <section className="hero">
+        <div className="hero-texte">
+          <p className="hero-salut">Badges et défis</p>
+          <h1>{nb} badge{nb > 1 ? 's' : ''} obtenu{nb > 1 ? 's' : ''}</h1>
+          <div className="hero-chiffres"><span>Chaque observation validée vous fait progresser</span></div>
+        </div>
+        <Anneau n={nb} total={badges.length} taille={84}>
+          <strong>{nb}</strong>
+          <small>/ {badges.length}</small>
+        </Anneau>
+      </section>
 
       <section className="bloc">
         <h2>Défis du moment</h2>

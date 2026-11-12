@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Anneau, Icone } from '../components/Icones';
 import { CarteEspece, Progression } from '../components/ui';
 import { evaluerBadges } from '../lib/badges';
 import { ESPECES } from '../data/species';
@@ -16,16 +17,22 @@ export default function Collection() {
 
   return (
     <div className="page">
-      <h1 className="titre-section">Ma collection</h1>
-      <div className="stats">
-        <div><strong>{dec.size}</strong><span>espèces</span></div>
-        <div><strong>{carnet.length}</strong><span>observations</span></div>
-        <div><strong>{familles.filter((f) => ESPECES.some((e) => e.famille === f && dec.has(e.id))).length}</strong><span>familles</span></div>
-      </div>
+      <section className="hero">
+        <div className="hero-texte">
+          <p className="hero-salut">Ma collection</p>
+          <h1>{dec.size ? `${dec.size} espèce${dec.size > 1 ? 's' : ''} découverte${dec.size > 1 ? 's' : ''}` : 'Votre collection vous attend'}</h1>
+          <div className="hero-chiffres">
+            <span><strong>{carnet.length}</strong> observations</span>
+            <span><strong>{familles.filter((f) => ESPECES.some((e) => e.famille === f && dec.has(e.id))).length}</strong> familles</span>
+          </div>
+        </div>
+        <Anneau n={dec.size} total={ESPECES.length} taille={92} />
+      </section>
       <Link to="/badges" className="lien-badges">
-        <span aria-hidden="true">🏅</span>
+        <span className="lb-icone"><Icone nom="medaille" /></span>
         <span>Badges et défis</span>
-        <span>{badges.filter((b) => b.obtenu).length} / {badges.length} ›</span>
+        <span className="lb-compte">{badges.filter((b) => b.obtenu).length} / {badges.length}</span>
+        <Icone nom="suivant" taille={18} />
       </Link>
       <section className="bloc">
         <h2>France métropolitaine</h2>

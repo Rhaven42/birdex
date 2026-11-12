@@ -325,3 +325,138 @@ details > summary { font-weight: 800; color: var(--blue); cursor: pointer; paddi
 /* Grille : toutes les vignettes au même format, quelle que soit la photo */
 .carte-espece-visuel { overflow: hidden; }
 .carte-espece-visuel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ═════════════ Finitions visuelles ═════════════ */
+:root { --rayon: 20px; --ombre: 0 1px 2px rgba(11, 43, 85, 0.06), 0 6px 20px rgba(11, 43, 85, 0.07); --degrade: linear-gradient(135deg, #0b2b55 0%, #1f6fd0 55%, #16b1ad 100%); }
+body { background: radial-gradient(1200px 600px at 100% -10%, #e3f6f5 0%, transparent 60%), radial-gradient(900px 500px at -20% 10%, #fff1e5 0%, transparent 55%), var(--fond); background-attachment: fixed; }
+.entete { background: rgba(255, 255, 255, 0.86); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid rgba(219, 228, 238, 0.7); }
+.bloc { border: 1px solid rgba(219, 228, 238, 0.6); }
+.titre-section { display: flex; align-items: center; gap: 0.5rem; letter-spacing: -0.01em; }
+.titre-section svg { color: var(--teal); flex-shrink: 0; }
+
+/* Transition entre les pages */
+.transition-page { animation: apparition 0.28s ease-out; }
+@keyframes apparition { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Navigation basse : onglet actif en pastille */
+.nav-bas { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 -4px 20px rgba(11, 43, 85, 0.06); }
+.nav-bas a { gap: 3px; transition: color 0.2s; }
+.nav-bas a.active { box-shadow: none; color: var(--navy); }
+.nav-icone { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 999px; transition: background 0.2s, transform 0.2s; }
+.nav-bas a.active .nav-icone { background: var(--orange-clair); color: var(--orange); }
+.nav-bas a:active .nav-icone { transform: scale(0.92); }
+
+/* Bandeau d'accueil (dégradé du logo) */
+.hero { display: flex; align-items: center; gap: 1rem; padding: 1.2rem; margin-bottom: 1rem; border-radius: 24px; background: var(--degrade); color: #fff; box-shadow: 0 10px 30px rgba(31, 111, 208, 0.25); position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); }
+.hero-texte { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.hero h1 { color: #fff; font-size: 1.35rem; font-weight: 900; margin: 0.15rem 0 0.6rem; letter-spacing: -0.01em; }
+.hero-salut { margin: 0; font-weight: 700; opacity: 0.85; }
+.hero-chiffres { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.hero-chiffres span { background: rgba(255, 255, 255, 0.16); border-radius: 999px; padding: 0.2rem 0.65rem; font-size: 0.8rem; }
+.hero-chiffres strong { font-weight: 900; }
+.hero .anneau { color: #fff; position: relative; z-index: 1; flex-shrink: 0; }
+
+/* Anneau de progression */
+.anneau { position: relative; display: grid; place-items: center; }
+.anneau svg { position: absolute; inset: 0; }
+.anneau-progres { transition: stroke-dasharray 0.8s ease; }
+.anneau-centre { position: relative; display: flex; flex-direction: column; align-items: center; line-height: 1; font-weight: 900; }
+.anneau-centre strong { font-size: 1.5rem; }
+.anneau-centre small { font-size: 0.7rem; opacity: 0.8; font-weight: 700; margin-top: 2px; }
+
+/* Oiseau du jour */
+.oiseau-du-jour { position: relative; display: block; margin: 1rem 0; border-radius: 24px; overflow: hidden; height: 210px; box-shadow: var(--ombre); color: #fff; text-decoration: none; }
+.oiseau-du-jour img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.oiseau-du-jour:hover img { transform: scale(1.04); }
+.odj-voile { position: absolute; inset: auto 0 0 0; padding: 2.5rem 1rem 0.9rem; background: linear-gradient(transparent, rgba(5, 20, 40, 0.82)); display: flex; flex-direction: column; }
+.odj-voile strong { font-size: 1.5rem; font-weight: 900; line-height: 1.1; }
+.odj-voile em { opacity: 0.85; font-size: 0.9rem; }
+.odj-etiquette { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.3rem; background: var(--orange); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.35rem; }
+.odj-fleche { position: absolute; right: 0.9rem; bottom: 0.9rem; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.95); color: var(--navy); display: grid; place-items: center; }
+
+/* Cartes d'espèces */
+.carte-espece { border-radius: 18px; border: 1px solid rgba(219, 228, 238, 0.7); transition: transform 0.18s ease, box-shadow 0.18s ease; }
+.carte-espece:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(11, 43, 85, 0.13); border-color: var(--teal); }
+.carte-espece:active { transform: scale(0.98); }
+.carte-espece-visuel img { transition: transform 0.4s ease, filter 0.4s ease; }
+.carte-espece:hover .carte-espece-visuel img { transform: scale(1.05); }
+.carte-espece-nom { font-size: 0.98rem; }
+.decouverte { border-color: rgba(255, 122, 20, 0.35); }
+.decouverte .carte-espece-visuel::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--ab-commune); color: #fff; font-weight: 900; font-size: 0.8rem; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
+.cadenas { font-size: 0.75rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
+
+/* Fiche : titre sur la photo */
+.fiche-entete { display: block; }
+.photo-fiche { border-radius: 24px; box-shadow: var(--ombre); background: #fff; }
+.photo-cadre { position: relative; }
+.photo-cadre img { aspect-ratio: 5 / 4; }
+.photo-voile { position: absolute; inset: auto 0 0 0; padding: 3rem 1.1rem 1rem; background: linear-gradient(transparent, rgba(5, 20, 40, 0.85)); }
+.photo-voile .fiche-titres h1 { color: #fff; font-size: 2rem; margin: 0.1rem 0 0; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); }
+.photo-voile .famille { color: #8fe3e0; }
+.photo-voile .sci { color: rgba(255, 255, 255, 0.88); margin: 0; }
+.photo-absente .photo-voile { position: static; background: none; padding: 0.5rem 1rem; }
+.photo-absente .photo-voile h1 { color: var(--navy) !important; text-shadow: none !important; }
+.photo-absente .photo-voile .sci { color: var(--doux); }
+.bandeau-decouvrir { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.fiche-badges { margin: 0.7rem 0 0; }
+.badge.ok { background: #e2f5e9; color: #1c6b3a; margin: 0; }
+
+/* Cases de la fiche */
+.cases { gap: 0.55rem; }
+.case-fiche { border: 1px solid var(--bord); border-radius: 18px; transition: transform 0.15s ease, background 0.2s, border-color 0.2s; }
+.case-fiche:active { transform: scale(0.95); }
+.case-icone { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--teal-clair); color: var(--teal); transition: background 0.2s, color 0.2s; }
+.case-fiche.active { border-color: var(--orange); background: #fff; box-shadow: 0 0 0 3px rgba(255, 122, 20, 0.18), var(--ombre); }
+.case-fiche.active .case-icone { background: var(--orange); color: #fff; }
+.case-fiche.fermee .case-icone { background: #e6ebf1; color: #8a99ab; }
+.titre-panneau { display: flex; align-items: center; gap: 0.5rem; }
+.titre-panneau svg { color: var(--orange); }
+.panneau { animation: apparition 0.22s ease-out; }
+.verrou-icone { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--fond); color: var(--doux); margin: 0.4rem 0; }
+
+/* Boutons */
+.bouton { transition: transform 0.12s ease, box-shadow 0.2s, filter 0.2s; }
+.bouton:active { transform: scale(0.97); }
+.bouton.principal { background: linear-gradient(135deg, #ff8a2b, #ff6a00); box-shadow: 0 6px 16px rgba(255, 122, 20, 0.35); }
+.bouton.principal:disabled { background: var(--gris); box-shadow: none; }
+.retour { display: inline-flex; align-items: center; gap: 0.2rem; }
+
+/* Recherche */
+.recherche input { box-shadow: var(--ombre); border-color: transparent; }
+.resultat { align-items: center; border: 1px solid rgba(219, 228, 238, 0.7); transition: transform 0.15s, box-shadow 0.15s; }
+.resultat:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(11, 43, 85, 0.1); }
+.resultat-photo { width: 72px; height: 72px; border-radius: 16px; object-fit: cover; flex-shrink: 0; }
+.resultat-photo.nb { filter: grayscale(1); opacity: 0.8; }
+
+/* Carnet */
+.liste-obs li { border-radius: 18px; border: 1px solid rgba(219, 228, 238, 0.7); align-items: center; }
+.liste-obs img { border-radius: 14px; }
+.obs-nom { font-weight: 900; color: var(--navy); text-decoration: none; font-size: 1.02rem; }
+.obs-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; font-size: 0.82rem; color: var(--doux); margin-top: 0.2rem; }
+.puce-date { background: var(--teal-clair); color: var(--navy); font-weight: 800; border-radius: 999px; padding: 0.05rem 0.55rem; }
+
+/* Liens et bandeaux */
+.lien-badges { gap: 0.75rem; border: 1px solid rgba(219, 228, 238, 0.7); }
+.lb-icone, .bc-icone { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: var(--orange-clair); color: var(--orange); flex-shrink: 0; }
+.lien-badges span:nth-child(2) { flex: 1; }
+.lb-compte { color: var(--doux); font-weight: 800; }
+.bandeau-charte { background: var(--degrade); gap: 0.8rem; box-shadow: 0 10px 30px rgba(31, 111, 208, 0.2); }
+.bandeau-charte .bc-icone { background: rgba(255, 255, 255, 0.18); color: #fff; }
+.bandeau-charte span:nth-child(2) { flex: 1; line-height: 1.3; font-size: 0.9rem; }
+
+/* Liste des régions : deux colonnes dès que possible */
+.liste-regions a { border: 1px solid transparent; transition: border-color 0.2s, background 0.2s; }
+.liste-regions a:hover { border-color: var(--teal); }
+
+/* Badges et défis */
+.medaille { border-radius: 18px; transition: transform 0.15s; }
+.medaille.obtenue { background: linear-gradient(135deg, #fff1e5, #fff8f1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-page, .panneau { animation: none; }
+  .carte-espece:hover, .resultat:hover, .oiseau-du-jour:hover img, .carte-espece:hover .carte-espece-visuel img { transform: none; }
+}
+.entete-zone .hero { margin-top: 0.4rem; }
+.entete-zone .hero h1 { font-size: 1.6rem; }
+.ou svg { color: var(--teal); vertical-align: -2px; }

@@ -8,6 +8,7 @@ import Collection from './pages/Collection';
 import Carnet from './pages/Carnet';
 import Charte from './pages/Charte';
 import Badges from './pages/Badges';
+import { Icone, type NomIcone } from './components/Icones';
 
 class GardeFou extends Component<{ children: ReactNode; cle: string }, { erreur: boolean; cle: string }> {
   state = { erreur: false, cle: this.props.cle };
@@ -29,11 +30,11 @@ class GardeFou extends Component<{ children: ReactNode; cle: string }, { erreur:
   }
 }
 
-const NAV = [
-  { to: '/', label: 'Carte', icone: '🗺️' },
-  { to: '/recherche', label: 'Recherche', icone: '🔍' },
-  { to: '/collection', label: 'Collection', icone: '🪶' },
-  { to: '/carnet', label: 'Carnet', icone: '📓' },
+const NAV: { to: string; label: string; icone: NomIcone }[] = [
+  { to: '/', label: 'Carte', icone: 'carte' },
+  { to: '/recherche', label: 'Recherche', icone: 'recherche' },
+  { to: '/collection', label: 'Collection', icone: 'collection' },
+  { to: '/carnet', label: 'Carnet', icone: 'carnet' },
 ];
 
 export default function App() {
@@ -56,6 +57,7 @@ export default function App() {
 
       <main>
         <GardeFou cle={pathname}>
+        <div className="transition-page" key={pathname}>
         <Routes>
           <Route path="/" element={<Accueil />} />
           <Route path="/zone/:id" element={<Zone />} />
@@ -67,13 +69,14 @@ export default function App() {
           <Route path="/badges" element={<Badges />} />
           <Route path="*" element={<div className="page"><p>Page introuvable.</p><Link to="/">Accueil</Link></div>} />
         </Routes>
+        </div>
         </GardeFou>
       </main>
 
       <nav className="nav-bas" aria-label="Navigation principale">
         {NAV.map((n) => (
           <NavLink key={n.to} to={n.to} end={n.to === '/'}>
-            <span aria-hidden="true">{n.icone}</span>
+            <span className="nav-icone"><Icone nom={n.icone} /></span>
             {n.label}
           </NavLink>
         ))}

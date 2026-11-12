@@ -94,7 +94,7 @@ export function CarteEspece({ e, decouverte, sousTitre }: { e: Espece; decouvert
   );
 }
 
-export function PhotoEspece({ e, verrouillee = false }: { e: Espece; verrouillee?: boolean }) {
+export function PhotoEspece({ e, verrouillee = false, children }: { e: Espece; verrouillee?: boolean; children?: ReactNode }) {
   const photo = photoDe(e);
   const [ko, setKo] = useState(false);
   if (!photo || ko)
@@ -103,12 +103,16 @@ export function PhotoEspece({ e, verrouillee = false }: { e: Espece; verrouillee
         <Silhouette />
         <p>{photo ? 'Photo indisponible (hors connexion ?)' : 'Pas encore de photo'}</p>
         {verrouillee && <span className="cadenas-grand">🔒 Fiche à découvrir</span>}
+        {children && <div className="photo-voile">{children}</div>}
       </div>
     );
   return (
     <figure className={`photo-fiche ${verrouillee ? 'a-decouvrir' : ''}`}>
-      <ImageFiable src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} onEchec={() => setKo(true)} />
-      {verrouillee && <span className="bandeau-decouvrir">🔒 À découvrir</span>}
+      <div className="photo-cadre">
+        <ImageFiable src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} onEchec={() => setKo(true)} />
+        {verrouillee && <span className="bandeau-decouvrir">🔒 À découvrir</span>}
+        {children && <div className="photo-voile">{children}</div>}
+      </div>
       <figcaption>
         © {photo.auteur} ·{' '}
         {photo.licenceUrl ? (

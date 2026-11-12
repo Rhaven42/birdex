@@ -7,6 +7,8 @@ import { useDecouvertes } from '../lib/hooks';
 import { MOIS_LONGS, STATUT } from '../lib/format';
 import type { Presence } from '../data/types';
 import { Silhouette } from '../components/ui';
+import { photoDe } from '../lib/media';
+import { Icone } from '../components/Icones';
 
 /** Période la plus fréquente parmi les régions (ex. « printemps–été, d’avril à août »). */
 function resumePeriode(pres: Presence[]) {
@@ -27,7 +29,7 @@ export default function Recherche() {
 
   return (
     <div className="page">
-      <h1 className="titre-section">Recherche</h1>
+      <h1 className="titre-section">Rechercher un oiseau</h1>
       <BarreRecherche key={q} valeurInitiale={q} autoFocus={!q} />
       {q && (
         <p className="petit">
@@ -38,12 +40,16 @@ export default function Recherche() {
         {resultats.map(({ espece: e }) => (
           <li key={e.id}>
             <Link to={`/espece/${e.id}`} className="resultat">
-              <Silhouette className={dec.has(e.id) ? 'trouvee' : ''} />
+              {photoDe(e) ? (
+                <img className={`resultat-photo ${dec.has(e.id) ? '' : 'nb'}`} src={photoDe(e)!.miniature} alt="" loading="lazy" />
+              ) : (
+                <Silhouette className={dec.has(e.id) ? 'trouvee' : ''} />
+              )}
               <div>
                 <strong>{e.nom}</strong> <em>{e.nomScientifique}</em>
                 {dec.has(e.id) && <span className="badge ok">✓ Découverte</span>}
                 <p className="ou">
-                  📍 {e.presence.length === 13 ? 'Toutes les régions' : `${e.presence.length} région${e.presence.length > 1 ? 's' : ''}`}
+                  <Icone nom="lieu" taille={15} /> {e.presence.length === 13 ? 'Toutes les régions' : `${e.presence.length} région${e.presence.length > 1 ? 's' : ''}`}
                   {' · '}
                   {e.presence
                     .filter((p) => p.abondance === 'commune')
@@ -52,7 +58,7 @@ export default function Recherche() {
                     .join(', ') || e.presence.map((p) => zoneById(p.zone)?.nom).slice(0, 4).join(', ')}
                   {e.presence.length > 4 ? '…' : ''}
                 </p>
-                <p className="ou">🗓️ {resumePeriode(e.presence)}</p>
+                <p className="ou"><Icone nom="soleil" taille={15} /> {resumePeriode(e.presence)}</p>
               </div>
             </Link>
           </li>

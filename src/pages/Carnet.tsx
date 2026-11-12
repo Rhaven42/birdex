@@ -3,6 +3,7 @@ import { especeById } from '../data/species';
 import { zoneById } from '../data/zones';
 import { useCarnet } from '../lib/hooks';
 import { dateFr } from '../lib/format';
+import { photoDe } from '../lib/media';
 import { exporterJSON, supprimerObservation, toutEffacer } from '../lib/storage';
 
 export default function Carnet() {
@@ -30,12 +31,12 @@ export default function Carnet() {
             const e = especeById(o.especeId);
             return (
               <li key={o.id}>
-                {o.photo && <img src={o.photo} alt="" />}
+                {(o.photo || (e && photoDe(e))) && <img src={o.photo ?? photoDe(e!)!.miniature} alt="" />}
                 <div>
-                  <Link to={`/espece/${o.especeId}`}><strong>{e?.nom ?? o.especeId}</strong></Link>
-                  <div className="petit">
-                    {dateFr(o.date)} · {o.zone === 'autre' ? 'Ailleurs' : zoneById(o.zone)?.nom}
-                    {o.lieu && ` · ${o.lieu}`} · validation {o.validation}
+                  <Link className="obs-nom" to={`/espece/${o.especeId}`}>{e?.nom ?? o.especeId}</Link>
+                  <div className="obs-meta">
+                    <span className="puce-date">{dateFr(o.date)}</span>
+                    <span>{o.zone === 'autre' ? 'Ailleurs' : zoneById(o.zone)?.nom}{o.lieu && ` · ${o.lieu}`}</span>
                   </div>
                   {o.note && <p>{o.note}</p>}
                 </div>

@@ -83,5 +83,7 @@ export function rechercher(requete: string, especes: Espece[], limite = 20): Res
     }))
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score - a.score || a.espece.nom.localeCompare(b.espece.nom, 'fr'))
+    // Si le texte tapé correspond vraiment à un nom (début ou contenu), on n'ajoute pas les ressemblances approximatives
+    .filter((r, _, tous) => tous[0].score < 80 || r.score >= 80)
     .slice(0, limite);
 }

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import geo from '../data/geo.json';
-import { CarteEspece, Progression } from '../components/ui';
+import { CarteEspece } from '../components/ui';
+import { Anneau, Icone } from '../components/Icones';
 import { especesDeZone } from '../data/species';
 import { zoneById } from '../data/zones';
 import type { Milieu } from '../data/types';
@@ -37,15 +38,23 @@ export default function Zone() {
 
   return (
     <div className="page">
-      <Link to="/" className="retour">‹ Carte</Link>
+      <Link to="/" className="retour"><Icone nom="retour" taille={18} /> Carte</Link>
       <header className="entete-zone">
-        <h1>{zone.nom}</h1>
+        <div className="hero">
+          <div className="hero-texte">
+            <p className="hero-salut">Région</p>
+            <h1>{zone.nom}</h1>
+            <div className="hero-chiffres">
+              <span><strong>{n}</strong> / {especes.length} espèces découvertes</span>
+            </div>
+          </div>
+          <Anneau n={n} total={especes.length} taille={84} />
+        </div>
         {dep && (
           <p className="petit">
             Vous avez touché {dep.nom} ({dep.code}) : la liste couvre toute la région.
           </p>
         )}
-        <Progression n={n} total={especes.length} />
         <p>{zone.description}</p>
         <p className="petit">{especes.length} espèces observées régulièrement dans la région (données GBIF 2015–2025).</p>
         <details>

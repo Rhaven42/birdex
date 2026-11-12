@@ -4,6 +4,7 @@ import Calendrier from '../components/Calendrier';
 import CarteRepartition from '../components/CarteRepartition';
 import FormulaireObservation from '../components/FormulaireObservation';
 import LecteurSons from '../components/LecteurSons';
+import { Icone, type NomIcone } from '../components/Icones';
 import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece } from '../components/ui';
 import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
 import { zoneById } from '../data/zones';
@@ -44,15 +45,15 @@ export default function Fiche() {
   const mesObs = carnet.filter((o) => o.especeId === e.id);
   const decouverte = mesObs.length > 0;
 
-  const cases: { id: Onglet; label: string; emoji: string; verrou?: boolean }[] = [
-    ...(!decouverte ? [{ id: 'indices' as const, label: 'Indices', emoji: '🔎' }] : []),
-    { id: 'histoire', label: 'Histoire', emoji: '📖', verrou: !decouverte },
-    { id: 'caracteristiques', label: 'Caractéristiques', emoji: '📏', verrou: !decouverte },
-    ...(e.redigee ? [{ id: 'vie' as const, label: 'Mode de vie', emoji: '🌿', verrou: !decouverte }] : []),
-    { id: 'carte', label: 'Où l’observer', emoji: '🗺️' },
-    { id: 'sons', label: 'Sons', emoji: '🎵' },
-    { id: 'observations', label: `Observations${mesObs.length ? ` (${mesObs.length})` : ''}`, emoji: '📓', verrou: !decouverte },
-    { id: 'sources', label: 'Sources', emoji: '📚' },
+  const cases: { id: Onglet; label: string; icone: NomIcone; verrou?: boolean }[] = [
+    ...(!decouverte ? [{ id: 'indices' as const, label: 'Indices', icone: 'indice' as const }] : []),
+    { id: 'histoire', label: 'Histoire', icone: 'histoire', verrou: !decouverte },
+    { id: 'caracteristiques', label: 'Caractéristiques', icone: 'mesure', verrou: !decouverte },
+    ...(e.redigee ? [{ id: 'vie' as const, label: 'Mode de vie', icone: 'feuille' as const, verrou: !decouverte }] : []),
+    { id: 'carte', label: 'Où l’observer', icone: 'lieu' },
+    { id: 'sons', label: 'Sons', icone: 'son' },
+    { id: 'observations', label: `Observations${mesObs.length ? ` (${mesObs.length})` : ''}`, icone: 'carnet', verrou: !decouverte },
+    { id: 'sources', label: 'Sources', icone: 'sources' },
   ];
   const onglet = cases.some((c) => c.id === choix) ? choix : decouverte ? 'histoire' : 'indices';
   const setOnglet = (o: Onglet) => setChoix(o);
@@ -186,7 +187,7 @@ export default function Fiche() {
 
   return (
     <div className="page fiche">
-      <button className="retour" onClick={() => (history.length > 1 ? navigate(-1) : navigate('/'))}>‹ Retour</button>
+      <button className="retour" onClick={() => (history.length > 1 ? navigate(-1) : navigate('/'))}><Icone nom="retour" taille={18} /> Retour</button>
 
       {(bravo || gagnes.length > 0) && (
         <div className="bravo" role="status">
@@ -210,16 +211,18 @@ export default function Fiche() {
       )}
 
       <header className="fiche-entete">
-        <PhotoEspece e={e} verrouillee={!decouverte} />
-        <div className="fiche-titres">
-          <p className="famille">{e.famille}</p>
-          <h1>{e.nom}</h1>
-          <p className="sci">{e.nomScientifique}</p>
-          <div className="badges">
-            <BadgeDifficulte e={e} />
-            {e.introduite && <Badge className="lr-na">🌍 Espèce introduite</Badge>}
-            {e.nocturne && <Badge>🌙 Nocturne</Badge>}
+        <PhotoEspece e={e} verrouillee={!decouverte}>
+          <div className="fiche-titres">
+            <p className="famille">{e.famille}</p>
+            <h1>{e.nom}</h1>
+            <p className="sci">{e.nomScientifique}</p>
           </div>
+        </PhotoEspece>
+        <div className="badges fiche-badges">
+          {decouverte && <Badge className="ok">✓ Découverte</Badge>}
+          <BadgeDifficulte e={e} />
+          {e.introduite && <Badge className="lr-na">Espèce introduite</Badge>}
+          {e.nocturne && <Badge>Nocturne</Badge>}
         </div>
       </header>
 
@@ -233,17 +236,18 @@ export default function Fiche() {
             className={`case-fiche ${onglet === c.id ? 'active' : ''} ${c.verrou ? 'fermee' : ''}`}
             onClick={() => setOnglet(c.id)}
           >
-            <span className="case-emoji" aria-hidden="true">{c.verrou ? '🔒' : c.emoji}</span>
+            <span className="case-icone"><Icone nom={c.verrou ? 'cadenas' : c.icone} /></span>
             <span>{c.label}</span>
           </button>
         ))}
       </nav>
 
       <section className="bloc panneau" id="panneau-fiche" role="tabpanel" aria-label={caseActive.label}>
-        <h2>{caseActive.emoji} {caseActive.label}</h2>
+        <h2 className="titre-panneau"><Icone nom={caseActive.icone} /> {caseActive.label}</h2>
         {caseActive.verrou ? (
           <div className="verrou-panneau">
-            <p>🔒 Cette rubrique se débloque quand vous avez observé l’oiseau.</p>
+            <span className="verrou-icone"><Icone nom="cadenas" taille={32} /></span>
+            <p>Cette rubrique se débloque quand vous avez observé l’oiseau.</p>
             <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
           </div>
         ) : (

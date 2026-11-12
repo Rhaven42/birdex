@@ -1,52 +1,97 @@
 import { Link } from 'react-router-dom';
 import FranceMap from '../components/FranceMap';
 import BarreRecherche from '../components/BarreRecherche';
-import { CarteEspece, Progression } from '../components/ui';
+import { Anneau, Icone } from '../components/Icones';
+import { CarteEspece } from '../components/ui';
 import { ESPECES } from '../data/species';
 import { ZONES } from '../data/zones';
-import { useDecouvertes } from '../lib/hooks';
+import { useCarnet, useDecouvertes } from '../lib/hooks';
 import { MOIS_LONGS, moisCourant } from '../lib/format';
+import { photoDe } from '../lib/media';
 import { progressionZones } from '../lib/progression';
+
+function salutation() {
+  const h = new Date().getHours();
+  return h < 6 ? 'Bonne nuit' : h < 18 ? 'Bonjour' : 'Bonsoir';
+}
+
+/** Oiseau du jour : une espèce commune, différente chaque jour (même choix pour toute la journée). */
+function oiseauDuJour() {
+  const communes = ESPECES.filter((e) => e.presence.filter((p) => p.abondance === 'commune').length >= 6 && photoDe(e));
+  const jour = Math.floor(Date.now() / 86_400_000);
+  return communes[(jour * 7919) % communes.length];
+}
 
 export default function Accueil() {
   const dec = useDecouvertes();
+  const carnet = useCarnet();
   const prog = progressionZones(dec);
   const m = moisCourant();
-  // À chercher ce mois-ci : espèces communes dans au moins la moitié des régions ce mois-ci, faciles d'abord
   const ordre = { facile: 0, moyen: 1, difficile: 2 };
   const duMois = ESPECES.filter(
     (e) => !dec.has(e.id) && e.presence.filter((p) => p.mois.includes(m) && p.abondance === 'commune').length >= 7,
   )
     .sort((a, b) => ordre[a.difficulte ?? 'moyen'] - ordre[b.difficulte ?? 'moyen'] || Number(b.redigee) - Number(a.redigee))
     .slice(0, 6);
+  const jour = oiseauDuJour();
+  const photoJour = jour && photoDe(jour);
+  const regionsVisitees = new Set(carnet.map((o) => o.zone).filter((z) => z !== 'autre')).size;
 
   return (
     <div className="page">
+      <section className="hero">
+        <div className="hero-texte">
+          <p className="hero-salut">{salutation()} 👋</p>
+          <h1>Quels oiseaux allez-vous découvrir aujourd’hui ?</h1>
+          <div className="hero-chiffres">
+            <span><strong>{dec.size}</strong> espèces</span>
+            <span><strong>{carnet.length}</strong> observations</span>
+            <span><strong>{regionsVisitees}</strong> régions</span>
+          </div>
+        </div>
+        <Anneau n={dec.size} total={ESPECES.length} taille={92}>
+          <strong>{dec.size}</strong>
+          <small>/ {ESPECES.length}</small>
+        </Anneau>
+      </section>
+
       <BarreRecherche />
 
+      {jour && photoJour && (
+        <Link to={`/espece/${jour.id}`} className="oiseau-du-jour">
+          <img src={photoJour.url} alt="" />
+          <div className="odj-voile">
+            <span className="odj-etiquette"><Icone nom="soleil" taille={16} /> Oiseau du jour</span>
+            <strong>{jour.nom}</strong>
+            <em>{jour.nomScientifique}</em>
+          </div>
+          <span className="odj-fleche"><Icone nom="suivant" /></span>
+        </Link>
+      )}
+
       <section className="bloc">
-        <h1 className="titre-section">Explorez la carte</h1>
+        <h2 className="titre-section"><Icone nom="carte" /> Explorez la France</h2>
         <FranceMap progression={prog} />
-        <div className="progression-nationale">
-          <Progression n={dec.size} total={ESPECES.length} label="Progression France" />
-        </div>
         <ul className="liste-regions">
-          {ZONES.map((z) => (
-            <li key={z.id}>
-              <Link to={`/zone/${z.id}`}>
-                <span className="lr-nom">{z.nom}</span>
-                <span className="lr-compte">{prog[z.id].n} / {prog[z.id].total}</span>
-                <span className="progression-barre"><span style={{ width: `${(prog[z.id].n / prog[z.id].total) * 100}%` }} /></span>
-              </Link>
-            </li>
-          ))}
+          {ZONES.map((z) => {
+            const p = prog[z.id];
+            return (
+              <li key={z.id}>
+                <Link to={`/zone/${z.id}`}>
+                  <span className="lr-nom">{z.nom}</span>
+                  <span className="lr-compte">{p.n} / {p.total}</span>
+                  <span className="progression-barre"><span style={{ width: `${(p.n / p.total) * 100}%` }} /></span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
       {duMois.length > 0 && (
         <section className="bloc">
-          <h2 className="titre-section">À chercher en {MOIS_LONGS[m - 1]}</h2>
-          <p className="petit">Des espèces faciles à trouver en ce moment dans la plupart des régions.</p>
+          <h2 className="titre-section"><Icone nom="jumelles" /> À chercher en {MOIS_LONGS[m - 1]}</h2>
+          <p className="petit">Des oiseaux faciles à trouver en ce moment dans la plupart des régions.</p>
           <div className="grille-especes">
             {duMois.map((e) => <CarteEspece key={e.id} e={e} decouverte={false} />)}
           </div>
@@ -54,7 +99,9 @@ export default function Accueil() {
       )}
 
       <Link to="/charte" className="bandeau-charte">
-        🤝 <span><strong>Charte du bon observateur</strong> : observer sans déranger</span> ›
+        <span className="bc-icone"><Icone nom="feuille" /></span>
+        <span><strong>Charte du bon observateur</strong><br />Observer sans déranger</span>
+        <Icone nom="suivant" />
       </Link>
     </div>
   );

@@ -34,6 +34,11 @@ describe('rechercher', () => {
     const ids = rechercher('mesange', ESPECES).map((r) => r.espece.id);
     expect(ids).toEqual(expect.arrayContaining(['mesange-bleue', 'mesange-charbonniere', 'mesange-a-longue-queue']));
   });
+  it('n’ajoute pas de ressemblances approximatives quand le nom existe vraiment', () => {
+    const noms = rechercher('chouette', ESPECES).map((r) => r.espece.nom);
+    expect(noms).toContain('Chouette hulotte');
+    expect(noms.some((n) => n.startsWith('Alouette'))).toBe(false);
+  });
   it('ne renvoie rien pour une requête sans rapport ou vide', () => {
     expect(rechercher('xyzqwk', ESPECES)).toEqual([]);
     expect(rechercher('  ', ESPECES)).toEqual([]);
