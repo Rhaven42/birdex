@@ -4,7 +4,7 @@ import Calendrier from '../components/Calendrier';
 import CarteRepartition from '../components/CarteRepartition';
 import FormulaireObservation from '../components/FormulaireObservation';
 import LecteurSons from '../components/LecteurSons';
-import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece, Silhouette } from '../components/ui';
+import { Badge, BadgeConservation, BadgeDifficulte, PhotoEspece } from '../components/ui';
 import { DATE_MAJ, SOURCES_DONNEES, especeById } from '../data/species';
 import { zoneById } from '../data/zones';
 import { useCarnet, useResume } from '../lib/hooks';
@@ -67,14 +67,7 @@ export default function Fiche() {
       )}
 
       <header className="fiche-entete">
-        {decouverte ? (
-          <PhotoEspece e={e} />
-        ) : (
-          <div className="photo-fiche verrouillee">
-            <Silhouette />
-            <span className="cadenas-grand">🔒 Fiche à découvrir</span>
-          </div>
-        )}
+        <PhotoEspece e={e} verrouillee={!decouverte} />
         <div className="fiche-titres">
           <p className="famille">{e.famille}</p>
           <h1>{e.nom}</h1>

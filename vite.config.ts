@@ -29,9 +29,9 @@ export default defineConfig({
         runtimeCaching: [
           {
             // Photos Wikimedia : mises en cache pour une consultation hors connexion
-            urlPattern: /^https:\/\/upload\.wikimedia\.org\//,
+            urlPattern: /^https:\/\/(upload|thumb)\.wikimedia\.org\//,
             handler: 'CacheFirst',
-            options: { cacheName: 'photos-wikimedia', expiration: { maxEntries: 300 }, cacheableResponse: { statuses: [0, 200] } },
+            options: { cacheName: 'photos-wikimedia', expiration: { maxEntries: 800 }, cacheableResponse: { statuses: [0, 200] } },
           },
         ],
       },

@@ -1,7 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import type { Observation } from '../data/types';
 import { abonner, chargerCarnet } from './storage';
-import { photoEspece, resumeWikipedia, type Photo, type Resume } from './media';
+import { resumeWikipedia, type Resume } from './media';
 
 let cache: Observation[] | null = null;
 abonner(() => (cache = null));
@@ -15,20 +15,6 @@ export function useCarnet(): Observation[] {
 export function useDecouvertes(): Set<string> {
   const carnet = useCarnet();
   return new Set(carnet.map((o) => o.especeId));
-}
-
-export function usePhoto(titreWiki: string | undefined, actif = true): { photo: Photo | null; chargement: boolean } {
-  const [etat, setEtat] = useState<{ titre: string; photo: Photo | null } | null>(null);
-  useEffect(() => {
-    if (!actif || !titreWiki) return;
-    let vivant = true;
-    photoEspece(titreWiki).then((photo) => vivant && setEtat({ titre: titreWiki, photo }));
-    return () => {
-      vivant = false;
-    };
-  }, [titreWiki, actif]);
-  const ok = !!etat && etat.titre === titreWiki;
-  return { photo: ok ? etat!.photo : null, chargement: actif && !!titreWiki && !ok };
 }
 
 export function useResume(titreWiki: string | undefined, actif = true): { resume: Resume | null; chargement: boolean } {

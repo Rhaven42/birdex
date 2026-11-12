@@ -3,6 +3,7 @@ import { ESPECES, especesDeZone, mois } from './species';
 import { REDACTIONS } from './redactions';
 import { ZONES, zoneOfDepartement } from './zones';
 import geo from './geo.json';
+import { photoDe } from '../lib/media';
 
 describe('mois()', () => {
   it('gère le passage d’année', () => {
@@ -65,6 +66,15 @@ describe('espèces', () => {
     expect(e('Turdus merula').presence).toHaveLength(13);
     expect(e('Apus apus').presence.every((p) => p.statut === 'estivant')).toBe(true);
     expect(e('Coracias garrulus').presence.map((p) => p.zone).sort()).toEqual(['occitanie', 'paca']);
+  });
+  it('chaque espèce a une photo libre créditée', () => {
+    for (const e of ESPECES) {
+      const p = photoDe(e);
+      expect(p, e.nom).toBeDefined();
+      expect(p!.url).toMatch(/^https:\/\/(thumb|upload)\.wikimedia\.org\//);
+      expect(p!.auteur.length).toBeGreaterThan(0);
+      expect(p!.licence.length).toBeGreaterThan(0);
+    }
   });
   it('n’emploie jamais le terme « race »', () => {
     expect(JSON.stringify(ESPECES)).not.toMatch(/\brace\b/i);

@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Espece } from '../data/types';
 import { DIFFICULTE, UICN } from '../lib/format';
-import { usePhoto } from '../lib/hooks';
+import { photoDe } from '../lib/media';
+import { useEffect, useState, type ImgHTMLAttributes } from 'react';
 
 export function Silhouette({ className = '' }: { className?: string }) {
   return (
@@ -50,12 +51,38 @@ export function BadgeConservation({ e }: { e: Espece }) {
   );
 }
 
+/** Image qui réessaie deux fois (refus temporaires du serveur d'images quand beaucoup de photos se chargent). */
+function ImageFiable({ src, onEchec, ...rest }: ImgHTMLAttributes<HTMLImageElement> & { src: string; onEchec: () => void }) {
+  const [essai, setEssai] = useState(0);
+  const [attente, setAttente] = useState(false);
+  useEffect(() => {
+    setEssai(0);
+  }, [src]);
+  useEffect(() => {
+    if (!attente) return;
+    const t = setTimeout(() => {
+      setAttente(false);
+      setEssai((n) => n + 1);
+    }, 1500 * (essai + 1));
+    return () => clearTimeout(t);
+  }, [attente, essai]);
+  if (attente) return null;
+  return (
+    <img
+      {...rest}
+      src={essai ? `${src}${src.includes('?') ? '&' : '?'}essai=${essai}` : src}
+      onError={() => (essai < 2 ? setAttente(true) : onEchec())}
+    />
+  );
+}
+
 export function CarteEspece({ e, decouverte, sousTitre }: { e: Espece; decouverte: boolean; sousTitre?: ReactNode }) {
-  const { photo } = usePhoto(e.wiki, decouverte);
+  const photo = photoDe(e);
+  const [ko, setKo] = useState(false);
   return (
     <Link to={`/espece/${e.id}`} className={`carte-espece ${decouverte ? 'decouverte' : 'verrouillee'}`}>
       <div className="carte-espece-visuel">
-        {decouverte && photo ? <img src={photo.url} alt={e.nom} loading="lazy" /> : <Silhouette />}
+        {photo && !ko ? <ImageFiable src={photo.miniature} alt="" loading="lazy" decoding="async" onEchec={() => setKo(true)} /> : <Silhouette />}
         {!decouverte && <span className="cadenas" aria-label="À découvrir">🔒</span>}
       </div>
       <div className="carte-espece-texte">
@@ -67,32 +94,29 @@ export function CarteEspece({ e, decouverte, sousTitre }: { e: Espece; decouvert
   );
 }
 
-export function PhotoEspece({ e }: { e: Espece }) {
-  const { photo, chargement } = usePhoto(e.wiki);
-  if (chargement) return <div className="photo-fiche photo-attente"><Silhouette /></div>;
-  if (!photo)
+export function PhotoEspece({ e, verrouillee = false }: { e: Espece; verrouillee?: boolean }) {
+  const photo = photoDe(e);
+  const [ko, setKo] = useState(false);
+  if (!photo || ko)
     return (
       <div className="photo-fiche photo-absente">
         <Silhouette />
-        <p>Photo indisponible (hors connexion ?)</p>
+        <p>{photo ? 'Photo indisponible (hors connexion ?)' : 'Pas encore de photo'}</p>
+        {verrouillee && <span className="cadenas-grand">🔒 Fiche à découvrir</span>}
       </div>
     );
   return (
-    <figure className="photo-fiche">
-      <img src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} />
+    <figure className={`photo-fiche ${verrouillee ? 'a-decouvrir' : ''}`}>
+      <ImageFiable src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} onEchec={() => setKo(true)} />
+      {verrouillee && <span className="bandeau-decouvrir">🔒 À découvrir</span>}
       <figcaption>
         © {photo.auteur} ·{' '}
         {photo.licenceUrl ? (
-          <a href={photo.licenceUrl} target="_blank" rel="noreferrer">
-            {photo.licence}
-          </a>
+          <a href={photo.licenceUrl} target="_blank" rel="noreferrer">{photo.licence}</a>
         ) : (
           photo.licence
         )}{' '}
-        ·{' '}
-        <a href={photo.source} target="_blank" rel="noreferrer">
-          Wikimedia Commons
-        </a>
+        · <a href={photo.source} target="_blank" rel="noreferrer">Wikimedia Commons</a>
       </figcaption>
     </figure>
   );

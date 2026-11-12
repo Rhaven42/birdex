@@ -27,6 +27,7 @@ npm run build      # build de production dans dist/ (hébergeable sur n’import
 | Liste des espèces, régions, mois, abondance | [GBIF](https://www.gbif.org) : observations d'oiseaux en France 2015–2025 (Faune-France, iNaturalist, eBird…), agrégées par région GADM et par mois |
 | Nom français, taille, envergure, statut UICN mondial, article Wikipédia | [Wikidata](https://www.wikidata.org) (identifiant GBIF P846) ; à défaut, noms vernaculaires GBIF |
 | Famille | Référentiel taxonomique GBIF (nom scientifique) |
+| Photos (auteur, licence) | Image de référence Wikidata (P18) sur Wikimedia Commons, via `npm run photos` |
 
 Critères pour qu'une espèce compte dans une région : ≥ 40 observations, ≥ 0,005 % des observations d'oiseaux de la région, présente au moins 3 mois, et notée au moins 5 années sur 11 (écarte les oiseaux égarés très « twitchés »). Les synonymes taxonomiques sont fusionnés (ex. *Sylvia/Curruca melanocephala*) ; les oiseaux échappés de captivité sont exclus ; les espèces introduites installées sont signalées.
 
