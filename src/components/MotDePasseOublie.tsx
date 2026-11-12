@@ -5,7 +5,7 @@ const traduire = (m: string) =>
   /error sending/i.test(m)
     ? 'L’e-mail n’a pas pu être envoyé pour le moment. Réessayez plus tard.'
     : /expired|invalid/i.test(m)
-    ? 'Code incorrect ou expiré. Vérifiez les 6 chiffres, ou demandez un nouveau code.'
+    ? 'Code incorrect ou expiré. Utilisez le code du dernier e-mail reçu, ou demandez un nouveau code.'
     : /rate|limit|seconds/i.test(m)
       ? 'Merci de patienter une minute avant de demander un nouveau code.'
       : /password/i.test(m)
@@ -58,7 +58,7 @@ export default function MotDePasseOublie({ emailInitial }: { emailInitial: strin
 
   return etape === 'email' ? (
     <form className="mdp-oublie" onSubmit={envoyerCode}>
-      <p>Indiquez votre e-mail : vous allez recevoir un code à 6 chiffres.</p>
+      <p>Indiquez votre e-mail : vous allez recevoir un code.</p>
       <label>
         E-mail
         <input type="email" autoComplete="email" value={email} onChange={(e) => { setModifie(true); setEmail(e.target.value); }} required />
@@ -70,14 +70,14 @@ export default function MotDePasseOublie({ emailInitial }: { emailInitial: strin
     <form className="mdp-oublie" onSubmit={changer}>
       <p>Un code a été envoyé à <strong>{email}</strong>. Regardez vos e-mails (et les courriers indésirables).</p>
       <label>
-        Code à 6 chiffres
+        Code reçu par e-mail
         <input
           inputMode="numeric"
           autoComplete="one-time-code"
-          pattern="[0-9]{6}"
+          pattern="[0-9]{6,10}"
           value={code}
-          // on garde les chiffres (un code collé « 123 456 » fonctionne), 6 au maximum
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+          // on garde les chiffres (un code collé « 123 456 » fonctionne) ; 6 à 10 selon le réglage Supabase
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 10))}
           required
           className="champ-code"
         />
