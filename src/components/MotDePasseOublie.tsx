@@ -2,7 +2,9 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
 
 const traduire = (m: string) =>
-  /expired|invalid/i.test(m)
+  /error sending/i.test(m)
+    ? 'L’e-mail n’a pas pu être envoyé pour le moment. Réessayez plus tard.'
+    : /expired|invalid/i.test(m)
     ? 'Code incorrect ou expiré. Vérifiez les 6 chiffres, ou demandez un nouveau code.'
     : /rate|limit|seconds/i.test(m)
       ? 'Merci de patienter une minute avant de demander un nouveau code.'
