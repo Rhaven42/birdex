@@ -8,7 +8,7 @@ import { oublierToutLocal } from '../lib/storage';
 import MotDePasseOublie from '../components/MotDePasseOublie';
 
 // Interrupteur : activé une fois l'envoi d'e-mails (Brevo) branché dans Supabase et testé
-const RECUPERATION_MDP = false;
+const RECUPERATION_MDP = true;
 import { useTailleTexte, type TailleTexte } from '../lib/texte';
 
 function ReglageTexte() {
