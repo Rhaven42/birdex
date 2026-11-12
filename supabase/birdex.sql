@@ -93,29 +93,3 @@ $$;
 
 revoke execute on function public.supprimer_mon_compte() from public, anon;
 grant execute on function public.supprimer_mon_compte() to authenticated;
-
--- 4. Identification par photo : compteur pour la limite quotidienne ------
--- Une ligne par identification demandée. L'utilisateur peut ajouter et lire ses lignes,
--- mais pas les supprimer (il ne peut donc pas remettre son compteur à zéro).
-create table if not exists public.identifications (
-  id       bigint generated always as identity primary key,
-  user_id  uuid not null default auth.uid() references auth.users (id) on delete cascade,
-  cree_le  timestamptz not null default now()
-);
-
-create index if not exists identifications_user_cree_idx on public.identifications (user_id, cree_le);
-
-alter table public.identifications enable row level security;
-
-revoke all on table public.identifications from anon, authenticated;
-grant select, insert on table public.identifications to authenticated;
-
-drop policy if exists "identifications : lecture de ses données" on public.identifications;
-create policy "identifications : lecture de ses données" on public.identifications
-  for select to authenticated
-  using ((select auth.uid()) = user_id);
-
-drop policy if exists "identifications : ajout pour soi" on public.identifications;
-create policy "identifications : ajout pour soi" on public.identifications
-  for insert to authenticated
-  with check ((select auth.uid()) = user_id);

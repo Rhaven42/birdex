@@ -8,19 +8,15 @@ interface Props {
   e: Espece;
   onFermer: () => void;
   onValide: () => void;
-  /** Préremplissage après une identification par photo */
-  photoInitiale?: string;
-  zoneInitiale?: ZoneId | 'autre';
-  parIA?: boolean;
 }
 
-export default function FormulaireObservation({ e, onFermer, onValide, photoInitiale, zoneInitiale, parIA = false }: Props) {
+export default function FormulaireObservation({ e, onFermer, onValide }: Props) {
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(aujourdhui);
-  const [zone, setZone] = useState<ZoneId | 'autre'>(zoneInitiale ?? e.presence[0]?.zone ?? 'autre');
+  const [zone, setZone] = useState<ZoneId | 'autre'>(e.presence[0]?.zone ?? 'autre');
   const [lieu, setLieu] = useState('');
   const [note, setNote] = useState('');
-  const [photo, setPhoto] = useState<string | undefined>(photoInitiale);
+  const [photo, setPhoto] = useState<string>();
   const [certain, setCertain] = useState(false);
   const [erreur, setErreur] = useState<string>();
 
@@ -36,7 +32,7 @@ export default function FormulaireObservation({ e, onFermer, onValide, photoInit
   function valider(ev: FormEvent) {
     ev.preventDefault();
     try {
-      ajouterObservation({ especeId: e.id, date, zone, lieu: lieu.trim(), note: note.trim(), photo, validation: parIA ? 'ia' : 'manuelle' });
+      ajouterObservation({ especeId: e.id, date, zone, lieu: lieu.trim(), note: note.trim(), photo, validation: 'manuelle' });
       onValide();
     } catch (err) {
       setErreur((err as Error).message);

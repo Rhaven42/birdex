@@ -11,8 +11,7 @@
     "geo": "node scripts/build-geo.mjs",
     "birds": "node scripts/build-birds.mjs",
     "sons": "node scripts/build-sons.mjs",
-    "photos": "node scripts/build-photos.mjs",
-    "fonction": "node scripts/build-fonction-identifier.mjs"
+    "photos": "node scripts/build-photos.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",

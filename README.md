@@ -52,14 +52,6 @@ La sélection (`src/data/sons.json`) est générée par `scripts/build-sons.mjs`
 
 En local : `XC_KEY=… npm run sons`.
 
-## Identification par photo (IA)
-
-Écran « Identifier » : l'utilisateur photographie un oiseau, la fonction serveur Supabase `identifier` interroge Claude, qui propose jusqu'à 3 espèces **de la liste Birdex** avec un niveau de confiance (indices : région et mois). C'est une suggestion : l'utilisateur compare avec les fiches puis confirme (observation enregistrée avec la validation « ia »).
-
-- Code : `supabase/functions/identifier/modele.ts` → `npm run fonction` génère `index.ts` (liste des espèces intégrée).
-- Réservé aux utilisateurs connectés, limité à 20 identifications par 24 h (table `identifications`).
-- La clé Anthropic est un secret de la fonction (`ANTHROPIC_API_KEY`), jamais dans l'application.
-
 ## Architecture
 
 ```
