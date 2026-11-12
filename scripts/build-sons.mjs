@@ -32,13 +32,28 @@ async function chercher(query) {
   }
 }
 
+// Noms employés par xeno-canto (référentiel IOC) quand ils diffèrent du référentiel GBIF.
+const NOMS_XC = {
+  'Aquila clanga': ['Clanga clanga'],
+  'Aquila pomarina': ['Clanga pomarina'],
+  'Phalacrocorax aristotelis': ['Gulosus aristotelis'],
+  'Phylloscopus sibillatrix': ['Phylloscopus sibilatrix'],
+  'Serinus citrinella': ['Carduelis citrinella'],
+  'Serinus corsicanus': ['Carduelis corsicana'],
+};
+
 const sons = {};
 let n = 0;
 for (const e of especes) {
-  const sp = `sp:"${e.nomScientifique}" grp:birds`;
-  // Priorité aux enregistrements faits en France, sinon en Europe
-  let recs = await chercher(`${sp} cnt:france`);
-  if (choisir(recs).length < 2) recs = recs.concat(await chercher(`${sp} area:europe`));
+  let recs = [];
+  for (const nom of [e.nomScientifique, ...(NOMS_XC[e.nomScientifique] ?? [])]) {
+    const sp = `sp:"${nom}" grp:birds`;
+    // Priorité aux enregistrements faits en France, puis en Europe, puis ailleurs (espèces introduites)
+    recs = recs.concat(await chercher(`${sp} cnt:france`));
+    if (choisir(recs).length < 2) recs = recs.concat(await chercher(`${sp} area:europe`));
+    if (!choisir(recs).length) recs = recs.concat(await chercher(sp));
+    if (choisir(recs).length >= 2) break;
+  }
   const sel = choisir(recs);
   if (sel.length) sons[e.nomScientifique] = sel;
   if (++n % 25 === 0) console.log(`${n}/${especes.length} espèces traitées`);

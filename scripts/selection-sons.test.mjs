@@ -28,6 +28,17 @@ describe('choisir', () => {
     const [x] = choisir([rec({})]);
     expect(x).toMatchObject({ auteur: 'Auteur', licence: 'https://creativecommons.org/licenses/by-nc-sa/4.0/', page: 'https://xeno-canto.org/1', sono: 'https://xeno-canto.org/sounds/1/med.png' });
   });
+  it('préfère le cri habituel aux cris nocturnes de migration', () => {
+    const r = choisir([rec({ id: 'nuit', type: 'nocturnal flight call' }), rec({ id: 'vol', type: 'flight call' }), rec({ id: 'tic', type: 'call', q: 'B' })]);
+    expect(r.map((x) => x.id)).toEqual(['tic', 'vol']);
+  });
+  it('accepte la qualité C seulement s’il n’y a rien de mieux', () => {
+    expect(choisir([rec({ id: 'c', q: 'C' })]).map((x) => x.id)).toEqual(['c']);
+    expect(choisir([rec({ id: 'c', q: 'C' }), rec({ id: 'a' })]).map((x) => x.id)).toEqual(['a']);
+  });
+  it('ignore les doublons (même enregistrement trouvé deux fois)', () => {
+    expect(choisir([rec({ id: '1' }), rec({ id: '1' })])).toHaveLength(1);
+  });
   it('prend ce qui existe pour une espèce sans chant typique', () => {
     expect(choisir([rec({ id: 'x', type: 'drumming' })]).map((x) => x.id)).toEqual(['x']);
   });

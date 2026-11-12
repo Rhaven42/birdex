@@ -22,6 +22,7 @@ export const sonsDe = (e: Espece): Enregistrement[] => SONS[e.nomScientifique] ?
 
 const TYPES: [RegExp, string][] = [
   [/alarm/i, 'Cri d’alarme'],
+  [/nocturnal/i, 'Cri nocturne (migration)'],
   [/flight call/i, 'Cri en vol'],
   [/\bsong\b/i, 'Chant'],
   [/\bcall\b/i, 'Cri'],
@@ -31,6 +32,7 @@ const typeFr = (t: string) => TYPES.find(([r]) => r.test(t))?.[1] ?? 'Enregistre
 
 /** Nom court de la licence Creative Commons à partir de son URL. */
 function licenceCourte(url: string) {
+  if (/publicdomain\/zero/i.test(url)) return 'CC0 (domaine public)';
   const m = url.match(/licenses\/([a-z-]+)\/([\d.]+)/i);
   return m ? `CC ${m[1].toUpperCase()} ${m[2]}` : 'Licence';
 }
