@@ -1,0 +1,97 @@
+import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import type { Espece } from '../data/types';
+import { DIFFICULTE, LISTE_ROUGE } from '../lib/format';
+import { usePhoto } from '../lib/hooks';
+
+export function Silhouette({ className = '' }: { className?: string }) {
+  return (
+    <svg className={`silhouette ${className}`} viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M22 66c0-17 13-29 29-30 4-10 13-15 22-12l13 4-11 4c3 8 2 18-4 26-5 7-13 11-23 13L33 86l-4-3 9-11c-10-1-16-4-16-6z" />
+      <path d="M48 76l-2 10M56 74l1 11" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" />
+      <circle cx="74" cy="31" r="2.2" className="silhouette-oeil" />
+    </svg>
+  );
+}
+
+export function Progression({ n, total, label }: { n: number; total: number; label?: string }) {
+  const pct = total ? Math.round((n / total) * 100) : 0;
+  return (
+    <div className="progression" role="progressbar" aria-valuenow={n} aria-valuemin={0} aria-valuemax={total} aria-label={label ?? 'Progression'}>
+      <div className="progression-texte">
+        <strong>
+          {n} / {total}
+        </strong>{' '}
+        espèces découvertes
+      </div>
+      <div className="progression-barre">
+        <div style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+export function Badge({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <span className={`badge ${className}`}>{children}</span>;
+}
+
+export function BadgeDifficulte({ e }: { e: Espece }) {
+  return <Badge className={`diff-${e.difficulte}`}>Identification : {DIFFICULTE[e.difficulte]}</Badge>;
+}
+
+export function BadgeConservation({ e }: { e: Espece }) {
+  const lr = LISTE_ROUGE[e.conservation.listeRouge];
+  return (
+    <Badge className={lr.classe}>
+      <abbr title={`Liste rouge France : ${lr.label}`}>{e.conservation.listeRouge}</abbr> · {lr.label}
+    </Badge>
+  );
+}
+
+export function CarteEspece({ e, decouverte, sousTitre }: { e: Espece; decouverte: boolean; sousTitre?: ReactNode }) {
+  const { photo } = usePhoto(e.wiki, decouverte);
+  return (
+    <Link to={`/espece/${e.id}`} className={`carte-espece ${decouverte ? 'decouverte' : 'verrouillee'}`}>
+      <div className="carte-espece-visuel">
+        {decouverte && photo ? <img src={photo.url} alt={e.nom} loading="lazy" /> : <Silhouette />}
+        {!decouverte && <span className="cadenas" aria-label="À découvrir">🔒</span>}
+      </div>
+      <div className="carte-espece-texte">
+        <span className="carte-espece-nom">{e.nom}</span>
+        <span className="carte-espece-sci">{e.nomScientifique}</span>
+        {sousTitre && <span className="carte-espece-sous">{sousTitre}</span>}
+      </div>
+    </Link>
+  );
+}
+
+export function PhotoEspece({ e }: { e: Espece }) {
+  const { photo, chargement } = usePhoto(e.wiki);
+  if (chargement) return <div className="photo-fiche photo-attente"><Silhouette /></div>;
+  if (!photo)
+    return (
+      <div className="photo-fiche photo-absente">
+        <Silhouette />
+        <p>Photo indisponible (hors connexion ?)</p>
+      </div>
+    );
+  return (
+    <figure className="photo-fiche">
+      <img src={photo.url} alt={`${e.nom} (${e.nomScientifique})`} />
+      <figcaption>
+        © {photo.auteur} ·{' '}
+        {photo.licenceUrl ? (
+          <a href={photo.licenceUrl} target="_blank" rel="noreferrer">
+            {photo.licence}
+          </a>
+        ) : (
+          photo.licence
+        )}{' '}
+        ·{' '}
+        <a href={photo.source} target="_blank" rel="noreferrer">
+          Wikimedia Commons
+        </a>
+      </figcaption>
+    </figure>
+  );
+}
