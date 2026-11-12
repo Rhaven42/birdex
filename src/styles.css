@@ -222,3 +222,19 @@ main { max-width: 960px; margin: 0 auto; }
 .texte { max-width: 720px; }
 .charte { padding-left: 1.2rem; }
 .charte li { margin-bottom: 0.7rem; }
+
+/* Badges et défis */
+.medailles { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.medaille { display: flex; gap: 0.8rem; align-items: center; padding: 0.7rem; border-radius: 14px; background: var(--fond); }
+.medaille-emoji { font-size: 1.8rem; width: 56px; height: 56px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: #e6edf4; filter: grayscale(1); opacity: 0.55; }
+.medaille.obtenue { background: var(--orange-clair); }
+.medaille.obtenue .medaille-emoji { filter: none; opacity: 1; background: #fff; box-shadow: 0 0 0 3px var(--orange); }
+.medaille-texte { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.medaille-texte strong { color: var(--navy); }
+.medaille-texte > span { font-size: 0.82rem; color: var(--doux); }
+.medaille-texte .progression-barre { height: 6px; margin: 0.35rem 0 0.15rem; }
+.medaille-compte { font-weight: 800; color: var(--navy) !important; }
+.lien-badges { display: flex; align-items: center; gap: 0.6rem; background: #fff; border-radius: var(--rayon); box-shadow: var(--ombre); padding: 0.9rem 1rem; text-decoration: none; color: var(--navy); font-weight: 800; margin-top: 1rem; }
+.lien-badges span:nth-child(2) { flex: 1; }
+.bravo-badges { margin: 0.3rem 0 0; padding: 0; list-style: none; font-size: 0.9rem; }
+.bravo > div { flex: 1; }

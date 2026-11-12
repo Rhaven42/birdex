@@ -9,6 +9,8 @@ import { zoneById } from '../data/zones';
 import { useCarnet } from '../lib/hooks';
 import { MILIEU, dateFr } from '../lib/format';
 import { progressionZones } from '../lib/progression';
+import { nouveauxBadges, type EtatBadge } from '../lib/badges';
+import { chargerCarnet } from '../lib/storage';
 
 export default function Fiche() {
   const { id = '' } = useParams();
@@ -17,6 +19,7 @@ export default function Fiche() {
   const navigate = useNavigate();
   const [form, setForm] = useState(false);
   const [bravo, setBravo] = useState(false);
+  const [gagnes, setGagnes] = useState<EtatBadge[]>([]);
   if (!e) return <div className="page"><p>Espèce introuvable.</p><Link to="/">Retour</Link></div>;
 
   const mesObs = carnet.filter((o) => o.especeId === e.id);
@@ -28,10 +31,26 @@ export default function Fiche() {
     <div className="page fiche">
       <button className="retour" onClick={() => (history.length > 1 ? navigate(-1) : navigate('/'))}>‹ Retour</button>
 
-      {bravo && (
+      {(bravo || gagnes.length > 0) && (
         <div className="bravo" role="status">
-          🎉 <strong>Nouvelle espèce découverte !</strong> {e.nom} rejoint votre collection.
-          <button onClick={() => setBravo(false)} aria-label="Fermer">×</button>
+          🎉
+          <div>
+            {bravo && (
+              <>
+                <strong>Nouvelle espèce découverte !</strong> {e.nom} rejoint votre collection.
+              </>
+            )}
+            {gagnes.length > 0 && (
+              <ul className="bravo-badges">
+                {gagnes.map((b) => (
+                  <li key={b.id}>
+                    {b.emoji} Badge obtenu : <strong>{b.titre}</strong>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <button onClick={() => { setBravo(false); setGagnes([]); }} aria-label="Fermer">×</button>
         </div>
       )}
 
@@ -155,7 +174,8 @@ export default function Fiche() {
           onFermer={() => setForm(false)}
           onValide={() => {
             setForm(false);
-            if (!decouverte) setBravo(true);
+            setBravo(!decouverte);
+            setGagnes(nouveauxBadges(carnet, chargerCarnet()));
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         />

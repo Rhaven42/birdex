@@ -7,6 +7,7 @@ import Recherche from './pages/Recherche';
 import Collection from './pages/Collection';
 import Carnet from './pages/Carnet';
 import Charte from './pages/Charte';
+import Badges from './pages/Badges';
 
 class GardeFou extends Component<{ children: ReactNode; cle: string }, { erreur: boolean; cle: string }> {
   state = { erreur: false, cle: this.props.cle };
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/collection" element={<Collection />} />
           <Route path="/carnet" element={<Carnet />} />
           <Route path="/charte" element={<Charte />} />
+          <Route path="/badges" element={<Badges />} />
           <Route path="*" element={<div className="page"><p>Page introuvable.</p><Link to="/">Accueil</Link></div>} />
         </Routes>
         </GardeFou>
