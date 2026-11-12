@@ -5,6 +5,22 @@ import { comptesActifs, supabase } from '../lib/supabase';
 import { supprimerCompte, synchroniser, useEtatSynchro, useSession } from '../lib/sync';
 import { useCarnet } from '../lib/hooks';
 import { oublierToutLocal } from '../lib/storage';
+import { useTailleTexte, type TailleTexte } from '../lib/texte';
+
+function ReglageTexte() {
+  const [taille, setTaille] = useTailleTexte();
+  const choix: [TailleTexte, string][] = [['normal', 'Normal'], ['grand', 'Grand'], ['tres-grand', 'Très grand']];
+  return (
+    <section className="bloc reglage-texte">
+      <h2>Taille du texte</h2>
+      <div className="segment" role="group" aria-label="Taille du texte">
+        {choix.map(([v, l]) => (
+          <button key={v} className={taille === v ? 'actif' : ''} aria-pressed={taille === v} onClick={() => setTaille(v)}>{l}</button>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 const MESSAGES: Record<string, string> = {
   'Invalid login credentials': 'E-mail ou mot de passe incorrect.',
@@ -86,8 +102,8 @@ export default function Compte() {
   if (!comptesActifs) {
     return (
       <div className="page">
-        <h1 className="titre-section">Mon compte</h1>
-        <p className="vide">Les comptes ne sont pas encore activés dans cette version.</p>
+        <h1 className="titre-section">Réglages</h1>
+        <ReglageTexte />
       </div>
     );
   }
@@ -96,7 +112,7 @@ export default function Compte() {
     <div className="page">
       <section className="hero">
         <div className="hero-texte">
-          <p className="hero-salut">Mon compte</p>
+          <p className="hero-salut">Mon compte et réglages</p>
           <h1>{session ? 'Votre collection est sauvegardée' : 'Ne perdez jamais votre collection'}</h1>
           <div className="hero-chiffres">
             {session ? <span>{session.user.email}</span> : <span>Retrouvez-la sur tous vos téléphones</span>}
@@ -104,6 +120,8 @@ export default function Compte() {
         </div>
         <span className="hero-icone"><Icone nom="carnet" taille={40} /></span>
       </section>
+
+      <ReglageTexte />
 
       {session === undefined && <p className="petit">Chargement…</p>}
       {session === null && <Formulaire />}

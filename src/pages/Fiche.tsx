@@ -73,7 +73,6 @@ export default function Fiche() {
               {e.signes.map((x) => <li key={x}>🔎 {x}</li>)}
             </ul>
             <p className="petit">Astuce : écoutez ses sons et regardez où et quand l’observer avant de partir.</p>
-            <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
           </>
         );
       case 'histoire':
@@ -247,13 +246,18 @@ export default function Fiche() {
         {caseActive.verrou ? (
           <div className="verrou-panneau">
             <span className="verrou-icone"><Icone nom="cadenas" taille={32} /></span>
-            <p>Cette rubrique se débloque quand vous avez observé l’oiseau.</p>
-            <button className="bouton principal large" onClick={() => setForm(true)}>👀 J’ai observé cet oiseau</button>
+            <p>Cette rubrique se débloque quand vous avez vu l’oiseau : touchez le bouton orange en bas.</p>
           </div>
         ) : (
           contenu(caseActive.id)
         )}
       </section>
+
+      <div className="action-fixe">
+        <button className="bouton principal" onClick={() => setForm(true)}>
+          {decouverte ? '👀 Je l’ai encore vu' : '👀 J’ai vu cet oiseau !'}
+        </button>
+      </div>
 
       {form && (
         <FormulaireObservation

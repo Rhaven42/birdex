@@ -36,7 +36,7 @@ export default function CarteRepartition({ e }: { e: Espece }) {
         Observée régulièrement dans <strong>{nbRegions} région{nbRegions > 1 ? 's' : ''}</strong> sur 13
         {mois ? <> · en <strong>{MOIS_LONGS[mois - 1]}</strong></> : null}
       </p>
-      <svg viewBox={FRANCE.join(' ')} role="img" aria-label={`Carte de répartition : ${e.nom}`}>
+      <svg viewBox={FRANCE.join(' ')} role="group" aria-label={`Carte de répartition : ${e.nom}`}>
         <g className="rep-regions">
           {geo.regions.map((r) => {
             const k = couleur(r.code);
@@ -97,7 +97,7 @@ export default function CarteRepartition({ e }: { e: Espece }) {
         </div>
       )}
       <p className="petit">
-        D’après {e.presence.reduce((a, p) => a + p.observations, 0).toLocaleString('fr-FR')} observations partagées sur GBIF (2015–2025).{' '}
+        D’après {e.presence.reduce((a, p) => a + p.observations, 0).toLocaleString('fr-FR')} observations faites par des naturalistes depuis 2015.{' '}
         <a href={`https://www.gbif.org/species/${e.gbif}`} target="_blank" rel="noreferrer">Voir les points d’observation ↗</a>
       </p>
     </div>

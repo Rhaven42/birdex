@@ -56,7 +56,7 @@ export default function Zone() {
           </p>
         )}
         <p>{zone.description}</p>
-        <p className="petit">{especes.length} espèces observées régulièrement dans la région (données GBIF 2015–2025).</p>
+        <p className="petit">{especes.length} espèces d’oiseaux vivent ou passent régulièrement dans cette région.</p>
         <details>
           <summary>Où observer ?</summary>
           <ul>{zone.sitesConseilles.map((s) => <li key={s}>{s}</li>)}</ul>
@@ -72,15 +72,20 @@ export default function Zone() {
             </button>
           ))}
         </div>
-        <select value={milieu} onChange={(ev) => setMilieu(ev.target.value as Milieu | '')} aria-label="Milieu">
-          <option value="">Tous les milieux</option>
-          {milieux.map((mi) => (
-            <option key={mi} value={mi}>{MILIEU[mi].emoji} {MILIEU[mi].label}</option>
-          ))}
-        </select>
-        <label className="case">
-          <input type="checkbox" checked={ceMois} onChange={(ev) => setCeMois(ev.target.checked)} /> Présentes ce mois-ci
-        </label>
+        <details className="plus-filtres">
+          <summary>Plus de filtres</summary>
+          <div>
+            <select value={milieu} onChange={(ev) => setMilieu(ev.target.value as Milieu | '')} aria-label="Milieu">
+              <option value="">Tous les milieux</option>
+              {milieux.map((mi) => (
+                <option key={mi} value={mi}>{MILIEU[mi].emoji} {MILIEU[mi].label}</option>
+              ))}
+            </select>
+            <label className="case">
+              <input type="checkbox" checked={ceMois} onChange={(ev) => setCeMois(ev.target.checked)} /> Présentes ce mois-ci
+            </label>
+          </div>
+        </details>
       </div>
 
       <div className="grille-especes">

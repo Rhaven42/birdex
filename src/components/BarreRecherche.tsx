@@ -32,7 +32,7 @@ export default function BarreRecherche({ valeurInitiale = '', autoFocus = false 
         type="search"
         value={q}
         autoFocus={autoFocus}
-        placeholder="Rechercher un oiseau (ex. : mésange, Parus major…)"
+        placeholder="Rechercher un oiseau"
         aria-label="Rechercher un oiseau"
         role="combobox"
         aria-expanded={ouvert && suggestions.length > 0}

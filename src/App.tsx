@@ -54,7 +54,7 @@ function BoutonCompte() {
   const session = useSession();
   const synchro = useEtatSynchro();
   return (
-    <Link to="/compte" className={`bouton-compte ${session ? 'connecte' : ''}`} aria-label={session ? 'Mon compte (connecté)' : 'Créer un compte ou se connecter'}>
+    <Link to="/compte" className={`bouton-compte ${session ? 'connecte' : ''}`} aria-label={session ? 'Mon compte et réglages (connecté)' : 'Mon compte et réglages'}>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true">
         <circle cx="12" cy="8" r="4" />
         <path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" />
@@ -66,7 +66,7 @@ function BoutonCompte() {
 
 const NAV: { to: string; label: string; icone: NomIcone }[] = [
   { to: '/', label: 'Carte', icone: 'carte' },
-  { to: '/recherche', label: 'Recherche', icone: 'recherche' },
+  { to: '/recherche', label: 'Chercher', icone: 'recherche' },
   { to: '/collection', label: 'Collection', icone: 'collection' },
   { to: '/carnet', label: 'Carnet', icone: 'carnet' },
 ];

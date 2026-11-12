@@ -7,6 +7,9 @@ import App from './App';
 import { Capacitor } from '@capacitor/core';
 import { initialiserAndroid } from './lib/natif';
 import { demarrerSynchroAuto } from './lib/sync';
+import { appliquerTailleTexte } from './lib/texte';
+
+appliquerTailleTexte();
 
 demarrerSynchroAuto();
 

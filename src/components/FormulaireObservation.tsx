@@ -50,7 +50,7 @@ export default function FormulaireObservation({ e, onFermer, onValide }: Props) 
         </label>
 
         <label>
-          Zone
+          Région
           <select value={zone} onChange={(ev) => setZone(ev.target.value as ZoneId | 'autre')}>
             {ZONES.map((z) => (
               <option key={z.id} value={z.id}>
@@ -61,6 +61,8 @@ export default function FormulaireObservation({ e, onFermer, onValide }: Props) 
           </select>
         </label>
 
+        <details className="facultatif" open={!!photo}>
+          <summary>Ajouter un lieu, une note ou une photo (facultatif)</summary>
         <label>
           Lieu approximatif
           <input value={lieu} onChange={(ev) => setLieu(ev.target.value)} placeholder="Commune ou site (ex. : Hyères)" maxLength={80} />
@@ -82,9 +84,11 @@ export default function FormulaireObservation({ e, onFermer, onValide }: Props) 
         </label>
         {photo && <img className="apercu-photo" src={photo} alt="Aperçu de votre photo" />}
 
+        </details>
+
         <label className="case">
           <input type="checkbox" checked={certain} onChange={(ev) => setCertain(ev.target.checked)} />
-          J’ai bien comparé avec les espèces ressemblantes et je suis sûr·e de mon identification.
+          Je suis sûr(e) d’avoir bien reconnu cet oiseau.
         </label>
 
         {erreur && <p className="erreur">{erreur}</p>}
@@ -94,7 +98,7 @@ export default function FormulaireObservation({ e, onFermer, onValide }: Props) 
             Annuler
           </button>
           <button type="submit" className="bouton principal" disabled={!certain}>
-            Valider l’observation
+            Enregistrer
           </button>
         </div>
       </form>

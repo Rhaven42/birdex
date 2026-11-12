@@ -78,7 +78,7 @@ export default function FranceMap({ progression }: Props) {
           ))}
         </select>
       </label>
-      <svg viewBox={vb.join(' ')} role="img" aria-label="Carte des régions et départements de France métropolitaine">
+      <svg viewBox={vb.join(' ')} role="group" aria-label="Carte des régions de France : touchez une région">
         <g className="departements" strokeWidth={0.8 * echelle}>
           {geo.departements.map((d) => (
             <path

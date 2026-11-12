@@ -477,3 +477,74 @@ body { background: radial-gradient(1200px 600px at 100% -10%, #e3f6f5 0%, transp
 .formulaire-compte input:focus { border-color: var(--teal); outline: none; }
 .bandeau-maj { display: flex; align-items: center; gap: 0.8rem; justify-content: space-between; margin: 0.6rem 1rem 0; padding: 0.7rem 0.9rem; border-radius: 16px; background: var(--orange-clair); color: var(--navy); font-weight: 700; font-size: 0.9rem; }
 .bandeau-maj .bouton { min-height: 40px; padding: 0.4rem 1rem; flex-shrink: 0; }
+
+/* ═════════════ Mode simple : lisible et facile à toucher ═════════════ */
+/* Taille du texte : réglable (Normal / Grand / Très grand) — « Grand » par défaut */
+html { font-size: 112.5%; }
+html.texte-normal { font-size: 100%; }
+html.texte-tres-grand { font-size: 125%; }
+:root {
+  line-height: 1.6;
+  --doux: #3f4f63; /* gris foncé : contraste ≥ 7:1 */
+  --ab-commune: #17703e; /* vert foncé */
+  --ab-peu: #a84d00; /* orange foncé */
+  --ab-rare: #b3202a; /* rouge foncé */
+  --orange-fonce: #c2410c; /* orange des boutons : texte blanc lisible */
+}
+.petit, .carte-info, .progression-texte, .lr-compte, .obs-meta, .credit, .photo-fiche figcaption, .legende, .repartition-detail,
+.medaille-texte > span, .calendrier-titre, .stats span, .hero-chiffres span, .curseur-mois span { font-size: 0.95rem !important; }
+.badge, .pastille, .puce-date, .odj-etiquette, .bandeau-decouvrir, .famille { font-size: 0.85rem !important; }
+.calendrier-mois li { font-size: 0.85rem; }
+
+/* Noms latins : seulement sur la fiche de l'oiseau */
+.carte-espece-sci, .suggestions li em, .resultat em, .odj-voile em { display: none; }
+.carte-espece-nom { font-size: 1.05rem; }
+.carte-espece-sous { font-size: 0.9rem; margin-top: 0.3rem; }
+
+/* Boutons et zones à toucher : 52 px minimum */
+.bouton, .segment button, .carte-zoom select, .filtres select, .filtre-texte, .lien, .retour,
+.modale input:not([type='checkbox']), .modale select, .modale textarea, .formulaire-compte input { min-height: 52px; }
+.bouton { font-size: 1.05rem; padding: 0.8rem 1.3rem; }
+.bouton.principal { background: linear-gradient(135deg, #dc5a12, var(--orange-fonce)); }
+.odj-etiquette, .bandeau-decouvrir { background: var(--orange-fonce) !important; }
+.retour { font-size: 1.05rem; padding: 0.5rem 0.2rem; }
+.case input { width: 28px; height: 28px; }
+.case { font-size: 1rem; align-items: center; }
+.petit-segment button { min-height: 48px !important; font-size: 0.95rem !important; padding: 0.3rem 0.9rem !important; }
+
+/* Navigation basse : grandes icônes, libellés lisibles */
+.nav-bas a { font-size: 0.85rem; min-height: 68px; }
+.nav-icone svg { width: 28px; height: 28px; }
+
+/* Pas d'animations superflues */
+.transition-page, .panneau, .bravo { animation: none !important; }
+.carte-espece:hover, .resultat:hover, .carte-espece:hover .carte-espece-visuel img, .oiseau-du-jour:hover img { transform: none !important; }
+
+/* Fiche : cases plus grandes, sur 2 colonnes, icône et texte côte à côte */
+.cases { grid-template-columns: 1fr 1fr !important; gap: 0.6rem; }
+.case-fiche { flex-direction: row; justify-content: flex-start; gap: 0.7rem; min-height: 64px; padding: 0.6rem 0.8rem; font-size: 1rem; text-align: left; }
+.case-icone { width: 44px; height: 44px; flex-shrink: 0; }
+
+/* Bouton « J'ai vu cet oiseau » toujours visible au-dessus de la barre du bas */
+.action-fixe { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 5; margin: 1rem 0; }
+.action-fixe .bouton { width: 100%; font-size: 1.15rem; min-height: 60px; box-shadow: 0 8px 22px rgba(194, 65, 12, 0.35); }
+
+/* Formulaire et filtres : le facultatif est replié */
+.facultatif summary, .plus-filtres summary { min-height: 48px; display: flex; align-items: center; font-size: 1rem; }
+.plus-filtres { width: 100%; }
+.plus-filtres > div { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 0.4rem; }
+
+/* Réglage de la taille du texte */
+.reglage-texte .segment button { flex: 1; }
+.reglage-texte .segment { display: flex; }
+.reglage-texte button:nth-child(1) { font-size: 0.9rem; }
+.reglage-texte button:nth-child(2) { font-size: 1.05rem; }
+.reglage-texte button:nth-child(3) { font-size: 1.2rem; }
+.cadenas { font-size: 0.9rem; padding: 3px 8px; }
+.logo-sous { font-size: 0.85rem; }
+.anneau-centre small { font-size: 0.85rem; }
+.cases { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+.case-fiche { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+.photo-voile .famille { display: none; }
+.reglage-texte .segment { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+.reglage-texte .segment button { border-radius: 14px; padding: 0.4rem; line-height: 1.2; }
