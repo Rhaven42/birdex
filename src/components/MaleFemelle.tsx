@@ -36,7 +36,7 @@ export default function MaleFemelle({ e }: { e: Espece }) {
         <Photo p={s.male} titre="Mâle" symbole="♂" />
         <Photo p={s.femelle} titre="Femelle" symbole="♀" />
       </div>
-      <p className="petit">Chez certaines espèces, le mâle et la femelle se ressemblent beaucoup : comparez la couleur de la tête, de la poitrine et du dos.</p>
+      <p className="petit">Pour les différencier, regardez surtout la couleur de la tête, de la poitrine et du dos.</p>
     </section>
   );
 }

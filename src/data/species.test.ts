@@ -4,6 +4,7 @@ import { REDACTIONS } from './redactions';
 import { ZONES, zoneOfDepartement } from './zones';
 import geo from './geo.json';
 import { photoDe } from '../lib/media';
+import sexes from './sexes.json';
 
 describe('mois()', () => {
   it('gère le passage d’année', () => {
@@ -74,6 +75,20 @@ describe('espèces', () => {
       expect(p!.url).toMatch(/^https:\/\/(thumb|upload)\.wikimedia\.org\//);
       expect(p!.auteur.length).toBeGreaterThan(0);
       expect(p!.licence.length).toBeGreaterThan(0);
+    }
+  });
+  it('mâle et femelle : espèces connues, deux photos créditées et distinctes', () => {
+    const sci = new Set(ESPECES.map((e) => e.nomScientifique));
+    const paires = Object.entries((sexes as { sexes: Record<string, Record<'male' | 'femelle', { url: string; auteur: string; licence: string }>> }).sexes);
+    expect(paires.length).toBeGreaterThan(50);
+    for (const [nom, p] of paires) {
+      expect(sci.has(nom), nom).toBe(true);
+      for (const x of [p.male, p.femelle]) {
+        expect(x.url).toMatch(/^https:\/\/(inaturalist-open-data\.s3\.amazonaws\.com|static\.inaturalist\.org)\//);
+        expect(x.auteur.length).toBeGreaterThan(0);
+        expect(x.licence).toMatch(/^CC/);
+      }
+      expect(p.male.url).not.toBe(p.femelle.url);
     }
   });
   it('n’emploie jamais le terme « race »', () => {

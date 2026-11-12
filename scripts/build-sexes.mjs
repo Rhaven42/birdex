@@ -14,6 +14,28 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const LICENCES = ['cc0', 'cc-by', 'cc-by-sa', 'cc-by-nc', 'cc-by-nc-sa'];
 const SEXE = { male: 11, femelle: 10 }; // valeurs de l'annotation « Sex » (term_id 9) sur iNaturalist
 const EUROPE = 97391;
+// Espèces où le mâle et la femelle ont un plumage nettement différent (dimorphisme sexuel marqué) :
+// la comparaison n'est utile que pour elles.
+const DIMORPHES = new Set([
+  // Canards
+  'Anas platyrhynchos', 'Anas crecca', 'Anas acuta', 'Mareca penelope', 'Mareca strepera', 'Spatula clypeata', 'Spatula querquedula',
+  'Aythya ferina', 'Aythya fuligula', 'Aythya marila', 'Netta rufina', 'Bucephala clangula', 'Mergus merganser', 'Mergus serrator',
+  'Mergellus albellus', 'Melanitta nigra', 'Somateria mollissima', 'Clangula hyemalis', 'Aix galericulata', 'Oxyura jamaicensis',
+  // Gallinacés et outarde
+  'Phasianus colchicus', 'Lyrurus tetrix', 'Tetrao urogallus', 'Tetrax tetrax',
+  // Rapaces
+  'Circus aeruginosus', 'Circus cyaneus', 'Circus pygargus', 'Circus macrourus', 'Falco tinnunculus', 'Falco naumanni',
+  'Falco vespertinus', 'Falco columbarius', 'Accipiter nisus',
+  // Pics
+  'Dendrocopos major', 'Dryobates minor',
+  // Passereaux
+  'Turdus merula', 'Phoenicurus ochruros', 'Phoenicurus phoenicurus', 'Saxicola rubicola', 'Saxicola rubetra', 'Oenanthe oenanthe',
+  'Oenanthe hispanica', 'Monticola solitarius', 'Monticola saxatilis', 'Ficedula hypoleuca', 'Ficedula albicollis', 'Luscinia svecica',
+  'Sylvia atricapilla', 'Curruca melanocephala', 'Fringilla coelebs', 'Fringilla montifringilla', 'Pyrrhula pyrrhula', 'Chloris chloris',
+  'Spinus spinus', 'Serinus serinus', 'Linaria cannabina', 'Loxia curvirostra', 'Acanthis flammea', 'Emberiza citrinella',
+  'Emberiza cirlus', 'Emberiza schoeniclus', 'Plectrophenax nivalis', 'Calcarius lapponicus', 'Passer domesticus', 'Passer italiae',
+  'Passer hispaniolensis', 'Lanius collurio', 'Oriolus oriolus', 'Panurus biarmicus', 'Motacilla flava', 'Motacilla cinerea',
+]);
 // Noms employés par iNaturalist quand ils diffèrent du référentiel GBIF
 const NOMS = {
   'Aquila clanga': ['Clanga clanga'], 'Aquila pomarina': ['Clanga pomarina'],
@@ -46,8 +68,12 @@ function valeurAnnotation(o, terme) {
   return a?.controlled_value_id;
 }
 
+// Photos écartées après relecture (mal cadrées, nid, main, oiseau trop loin…) : identifiants d'observation iNaturalist
+const EXCLUES = new Set(existsSync(new URL('data-src/sexes-exclues.json', ROOT)) ? JSON.parse(readFileSync(new URL('data-src/sexes-exclues.json', ROOT))) : []);
+
 function photoDe(obs) {
   for (const o of obs) {
+    if (EXCLUES.has(o.id)) continue;
     const ph = (o.photos ?? []).find((p) => LICENCES.includes(p.license_code));
     if (!ph) continue;
     return {
@@ -56,6 +82,7 @@ function photoDe(obs) {
       auteur: (ph.attribution ?? '').replace(/^\(c\)\s*/i, '').replace(/,\s*some rights reserved.*$/i, '').replace(/,\s*no rights reserved.*$/i, '').trim() || 'Auteur inconnu',
       licence: ph.license_code.toUpperCase().replace('CC-', 'CC ').replace(/-/g, '-'),
       source: `https://www.inaturalist.org/observations/${o.id}`,
+      obs: o.id,
     };
   }
   return undefined;
@@ -64,7 +91,7 @@ function photoDe(obs) {
 const especes = JSON.parse(readFileSync(new URL('src/data/gbif.json', ROOT))).especes;
 const sortie = {};
 let n = 0;
-for (const e of especes) {
+for (const e of especes.filter((x) => DIMORPHES.has(x.nomScientifique))) {
   const res = {};
   for (const [sexe, valeur] of Object.entries(SEXE)) {
     for (const nom of [e.nomScientifique, ...(NOMS[e.nomScientifique] ?? [])]) {
@@ -91,4 +118,6 @@ for (const e of especes) {
   if (++n % 25 === 0) console.log(`${n}/${especes.length}`);
 }
 writeFileSync(new URL('src/data/sexes.json', ROOT), JSON.stringify({ genereLe: new Date().toISOString().slice(0, 10), sexes: sortie }));
-console.log(`sexes.json : ${Object.keys(sortie).length} espèces avec une photo de mâle ET de femelle.`);
+console.log(`sexes.json : ${Object.keys(sortie).length} espèces (sur ${DIMORPHES.size} à mâle et femelle différents) avec les deux photos.`);
+const manquent = [...DIMORPHES].filter((s) => !sortie[s] && especes.some((e) => e.nomScientifique === s));
+if (manquent.length) console.log('Sans photo :', manquent.join(', '));
